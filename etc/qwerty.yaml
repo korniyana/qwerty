@@ -1,0 +1,10 @@
+server:
+  pid_file: tmp/querty.pid
+  name: qwerty
+  bind_address: 0.0.0.0:8081
+logger:
+    file: log/qwerty.log
+    format: json
+    level: DEBUG
+    log2Engine: 1 #0 - screen, 1 - file, 2 - both¬
+    time_stamp_format: "2006-01-02 15:04:05.000000000"

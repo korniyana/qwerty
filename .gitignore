@@ -1,0 +1,6 @@
+*.swp
+.coverage
+coverage.xml
+bin/
+tmp/*.pid
+log/*log
