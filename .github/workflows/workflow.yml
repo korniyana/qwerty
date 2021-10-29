@@ -6,9 +6,9 @@ on:
 
 jobs:
   build:
-    runs-on: windows-latest
+    runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@master
-    - uses: ./.github/actions/hello@master
+    - uses: korniyana/qwerty/.github/actions/hello@master
       with:
         name: OctoCat
