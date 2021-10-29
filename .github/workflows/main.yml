@@ -52,7 +52,7 @@ jobs:
         run: |
           echo "IMAGE_TAG=test4" >> "$GITHUB_ENV"
 
-      - name: Check the environment correctness input: "{{github.event.inputs.env_name}}"
+      - name: Check the environment correctness input
         if: ${{ !GITHUB_ENV.IMAGE_TAG }}
         concurrency:
           group: ${{ github.ref }}
