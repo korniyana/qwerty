@@ -9,6 +9,6 @@ jobs:
     runs-on: windows-latest
     steps:
     - uses: actions/checkout@master
-    - uses: ./.github/actions/hello
+    - uses: ./.github/actions/hello@master
       with:
         name: OctoCat
