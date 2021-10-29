@@ -1,0 +1,14 @@
+name: Call a reusable workflow
+
+on:
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  call-workflow-passing-data:
+    uses: korniyana/qwerty/.github/workflows/workflow-B.yml@master
+    with:
+      username: mona
+    secrets:
+      token: ${{ secrets.TOKEN }}
