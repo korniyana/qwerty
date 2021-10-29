@@ -53,7 +53,7 @@ jobs:
           echo "IMAGE_TAG=test4" >> "$GITHUB_ENV"
 
       - name: Check the environment correctness input
-        if: ${{ !GITHUB_ENV.IMAGE_TAG }}
+        if: ${{ !env.IMAGE_TAG }}
         run: exit 1
         with:
           message: "incorrect env: ${{github.event.inputs.env_name}}"
