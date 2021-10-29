@@ -22,7 +22,7 @@ jobs:
         GIT_BRANCH=${GITHUB_BASE_REF:-${GITHUB_REF#refs/heads/}}
         echo "GIT_BRANCH=$GIT_BRANCH" >> "$GITHUB_ENV"
   call-workflow-passing-data:
-    if: ${{env.GIT_BRANCH == 'master'}}
+    if: ${{GIT_BRANCH == 'master'}}
     needs: call-workflow-passing-data1
     uses: korniyana/qwerty/.github/workflows/workflow-B.yml@master
     with:
