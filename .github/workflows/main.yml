@@ -54,8 +54,9 @@ jobs:
 
       - name: Check the environment correctness input
         if: ${{ !GITHUB_ENV.IMAGE_TAG }}
-        concurrency:
-          group: ${{ github.ref }}
-          cancel-in-progress: true
+        run: exit 1
         with:
           message: "incorrect env: ${{github.event.inputs.env_name}}"
+          
+      - name: AFTER
+        run: echo "test"
