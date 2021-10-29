@@ -19,7 +19,7 @@ jobs:
       shell: bash
       run: echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
       id: extract_branch
-    - name: call-workflow-passing-data:
+    - name: call-workflow-passing-data
       uses: korniyana/qwerty/.github/workflows/workflow-B.yml@{{env.GIT_BRANCH}}
       with:
         username: mona
