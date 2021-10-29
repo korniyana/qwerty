@@ -55,7 +55,7 @@ jobs:
       - name: Check the environment correctness input  ${{github.event.inputs.env_name}}
         if: ${{ !env.IMAGE_TAG }}
         run: |
-          echo "test ${{github.event.inputs.env_name}"
+          echo "test ${{github.event.inputs.env_name}}"
           exit 1
           
       - name: AFTER
