@@ -20,8 +20,17 @@ jobs:
       run: echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
       id: extract_branch
   call-workflow-passing-data:
+    if: ${{env.GIT_BRANCH == 'master'}}
     needs: call-workflow-passing-data1
-    uses: korniyana/qwerty/.github/workflows/workflow-B.yml@{{env.GIT_BRANCH}}
+    uses: korniyana/qwerty/.github/workflows/workflow-B.yml@master
+    with:
+      username: mona
+    secrets:
+      token: ${{ secrets.TOKEN }}
+  call-workflow-passing-data-develop:
+    if: ${{env.GIT_BRANCH == 'develop'}}
+    needs: call-workflow-passing-data1
+    uses: korniyana/qwerty/.github/workflows/workflow-B.yml@develop
     with:
       username: mona
     secrets:
