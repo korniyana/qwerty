@@ -1,7 +1,13 @@
+---
 name: Call a reusable workflow
 
 on:
   workflow_dispatch:
+    inputs:
+      env_name: #https://github.community/t/can-workflow-dispatch-input-be-option-list/127338/2 no options list yet
+        description: 'Environment name (possible values are: tz, tz2, tz3, tz4, sz, prod)'
+        required: true
+        default: tz
       
 env:
   GIT_BRANCH: ""
@@ -14,7 +20,7 @@ jobs:
       run: |
         # Short name for current branch. For PRs, use target branch (base ref)
         GIT_BRANCH=${GITHUB_BASE_REF:-${GITHUB_REF#refs/heads/}}
-        echo "GIT_BRANCH=$GIT_BRANCH" >> $GITHUB_ENV
+        echo "GIT_BRANCH=$GIT_BRANCH" >> "$GITHUB_ENV"
   call-workflow-passing-data:
     if: ${{env.GIT_BRANCH == 'master'}}
     needs: call-workflow-passing-data1
