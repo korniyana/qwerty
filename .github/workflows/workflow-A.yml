@@ -7,7 +7,7 @@ env:
   GIT_BRANCH: ""
 
 jobs:
-  call-workflow-passing-data:
+  call-workflow-passing-data1:
     runs-on: ubuntu-latest
     steps:
     - name: Set environment variables
@@ -19,7 +19,10 @@ jobs:
       shell: bash
       run: echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
       id: extract_branch
-    - uses: korniyana/qwerty/.github/workflows/workflow-B.yml@${{GIT_BRANCH}}
-      with:
-        username: mona
-        token: ${{ secrets.TOKEN }}
+  call-workflow-passing-data:
+    uses: korniyana/qwerty/.github/workflows/workflow-B.yml@master
+    with:
+      username: mona
+    secrets:
+      token: ${{ secrets.TOKEN }}
+
