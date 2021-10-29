@@ -2,11 +2,9 @@ name: Call a reusable workflow
 
 on:
   workflow_dispatch:
-    branches:
-      - master
       
 env:
-  GIT_BRANCH:
+  GIT_BRANCH: ""
 
 jobs:
   call-workflow-passing-data:
