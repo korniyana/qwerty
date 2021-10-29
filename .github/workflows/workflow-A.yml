@@ -15,22 +15,10 @@ jobs:
         # Short name for current branch. For PRs, use target branch (base ref)
         GIT_BRANCH=${GITHUB_BASE_REF:-${GITHUB_REF#refs/heads/}}
         echo "GIT_BRANCH=$GIT_BRANCH" >> $GITHUB_ENV
-    - name: Extract branch name ${{env.GIT_BRANCH}}
-      shell: bash
-      run: echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
-      id: extract_branch
   call-workflow-passing-data:
     if: ${{env.GIT_BRANCH == 'master'}}
     needs: call-workflow-passing-data1
     uses: korniyana/qwerty/.github/workflows/workflow-B.yml@master
-    with:
-      username: mona
-    secrets:
-      token: ${{ secrets.TOKEN }}
-  call-workflow-passing-data-develop:
-    if: ${{env.GIT_BRANCH == 'develop'}}
-    needs: call-workflow-passing-data1
-    uses: korniyana/qwerty/.github/workflows/workflow-B.yml@develop
     with:
       username: mona
     secrets:
