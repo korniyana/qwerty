@@ -8,7 +8,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@latest
+    - uses: actions/checkout@master
     - uses: ./.github/actions/hello@latest
       with:
         name: OctoCat
