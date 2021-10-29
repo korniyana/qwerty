@@ -1,0 +1,61 @@
+---
+name: 'Deploy'
+
+on:
+  workflow_dispatch:
+    inputs:
+      env_name: #https://github.community/t/can-workflow-dispatch-input-be-option-list/127338/2 no options list yet
+        description: 'Environment name (possible values are: tz, tz2, tz3, tz4, sz, prod)'
+        required: true
+        default: tz
+      skip_deploy:
+        description: 'Pin image tag only (yes/no)'
+        required: false
+        default: "no"
+
+env:
+  API_REPO: figleaf-api
+  IMAGE_TAG:
+
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Set environment variables for prod
+        if: ${{ github.event.inputs.env_name == 'prod' }}
+        run: |
+          echo "IMAGE_TAG=stable" >> "$GITHUB_ENV"
+
+      - name: Set environment variables for stage
+        if: ${{ github.event.inputs.env_name == 'sz' }}
+        run: |
+          echo "IMAGE_TAG=latest" >> "$GITHUB_ENV"
+
+      - name: Set environment variables for test
+        if: ${{ github.event.inputs.env_name == 'tz' }}
+        run: |
+          echo "IMAGE_TAG=test" >> "$GITHUB_ENV"
+
+      - name: Set environment variables for test2
+        if: ${{ github.event.inputs.env_name == 'tz2' }}
+        run: |
+          echo "IMAGE_TAG=test2" >> "$GITHUB_ENV"
+
+      - name: Set environment variables for test3
+        if: ${{ github.event.inputs.env_name == 'tz3' }}
+        run: |
+          echo "IMAGE_TAG=test3" >> "$GITHUB_ENV"
+
+      - name: Set environment variables for test4
+        if: ${{ github.event.inputs.env_name == 'tz4' }}
+        run: |
+          echo "IMAGE_TAG=test4" >> "$GITHUB_ENV"
+
+      - name: Check the environment correctness input: "{{github.event.inputs.env_name}}"
+        if: ${{ !GITHUB_ENV.IMAGE_TAG }}
+        concurrency:
+          group: ${{ github.ref }}
+          cancel-in-progress: true
+        with:
+          message: "incorrect env: ${{github.event.inputs.env_name}}"
