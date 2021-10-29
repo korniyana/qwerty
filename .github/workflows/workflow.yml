@@ -9,6 +9,6 @@ jobs:
     runs-on: windows-latest
     steps:
     - uses: actions/checkout@v2
-    - uses: ./.github/actions@v1
+    - uses: ./.github/actions/action.yml@main
       with:
         name: OctoCat
