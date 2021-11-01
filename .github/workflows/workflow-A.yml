@@ -11,6 +11,7 @@ on:
       
 env:
   GIT_BRANCH: ""
+  ENV_TYPE: alpha
 
 jobs:
   call-workflow-passing-data1:
