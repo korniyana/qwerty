@@ -25,7 +25,7 @@ jobs:
       run: echo ${{env.GIT_BRANCH}}
   call-workflow-passing-data:
     needs: call-workflow-passing-data1
-    uses: korniyana/qwerty/.github/workflows/workflow-B.yml@${GITHUB_BASE_REF:-${GITHUB_REF#refs/heads/}}
+    uses: korniyana/qwerty/.github/workflows/workflow-B.yml@master
     with:
       username: mona
     secrets:
