@@ -23,6 +23,8 @@ jobs:
         echo "GIT_BRANCH=$GIT_BRANCH" >> "$GITHUB_ENV"
     - name: Show
       run: echo ${{env.GIT_BRANCH}}
+    - name: Set
+      run: echo "::set-output name=version_number::1.2.3"
   call-workflow-passing-data:
     needs: call-workflow-passing-data1
     uses: korniyana/qwerty/.github/workflows/workflow-B.yml@master
