@@ -100,13 +100,6 @@ jobs:
         if: ${{ !env.IMAGE_TAG }}
         run: exit 1
 
-      - name: Store old image
-        env:
-          ENV_API_TAG: ${{ 1000.login-ecr.outputs.registry }}/${{ env.API_REPO }}:${{ env.IMAGE_TAG }}
-        run: |
-          REVERT_IMAGE_TAG=$(docker images $ENV_API_TAG --format "{{.ID}}")
-          echo "REVERT_IMAGE_TAG=$REVERT_IMAGE_TAG" >> "$GITHUB_ENV"
-
       - name: Configure AWS credentials from ECR
         uses: aws-actions/configure-aws-credentials@v1
         with:
@@ -120,8 +113,8 @@ jobs:
 
       - name: Pin last api images
         env:
-          API_TAG: ${{ 1000.login-ecr.outputs.registry }}/${{ env.API_REPO }}:git-sha-${{ github.sha }}
-          ENV_API_TAG: ${{ 1000.login-ecr.outputs.registry }}/${{ env.API_REPO }}:${{ env.IMAGE_TAG }}
+          API_TAG: ${{ steps.login-ecr.outputs.registry }}/${{ env.API_REPO }}:git-sha-${{ github.sha }}
+          ENV_API_TAG: ${{ steps.login-ecr.outputs.registry }}/${{ env.API_REPO }}:${{ env.IMAGE_TAG }}
         if: ${{ github.event.inputs.env_name != 'prod' || github.ref == 'refs/heads/master' }}
         run: |
           docker pull $API_TAG
@@ -130,8 +123,8 @@ jobs:
 
       - name: Pin last migration images
         env:
-          MIGRATION_TAG: ${{ 1000.login-ecr.outputs.registry }}/${{ env.MIGRATION_REPO }}:git-sha-${{ github.sha }}
-          ENV_MIGRATION_TAG: ${{ 1000.login-ecr.outputs.registry }}/${{ env.MIGRATION_REPO }}:${{ env.IMAGE_TAG }}
+          MIGRATION_TAG: ${{ steps.login-ecr.outputs.registry }}/${{ env.MIGRATION_REPO }}:git-sha-${{ github.sha }}
+          ENV_MIGRATION_TAG: ${{ steps.login-ecr.outputs.registry }}/${{ env.MIGRATION_REPO }}:${{ env.IMAGE_TAG }}
         if: ${{ github.event.inputs.env_name != 'prod' || github.ref == 'refs/heads/master' }}
         run: |
           docker pull $MIGRATION_TAG
@@ -209,8 +202,8 @@ jobs:
     steps:
       - name: Pin last api images
         env:
-          LATEST_TAG: ${{ 1000.login-ecr.outputs.registry }}/${{ env.API_REPO }}:${{ env.IMAGE_TAG }}
-          PREV_TAG: ${{ 1000.login-ecr.outputs.registry }}/${{ env.API_REPO }}:${{ env.PREV_IMAGE_TAG }}
+          LATEST_TAG: ${{ steps.login-ecr.outputs.registry }}/${{ env.API_REPO }}:${{ env.IMAGE_TAG }}
+          PREV_TAG: ${{ steps.login-ecr.outputs.registry }}/${{ env.API_REPO }}:${{ env.PREV_IMAGE_TAG }}
         if: ${{ github.event.inputs.env_name != 'prod' || github.ref == 'refs/heads/master' }}
         run: |
           docker tag $LATEST_TAG $PREV_TAG
@@ -223,8 +216,8 @@ jobs:
     steps:
       - name: Pin previous api images
         env:
-          LATEST_TAG: ${{ 1000.login-ecr.outputs.registry }}/${{ env.API_REPO }}:${{ env.IMAGE_TAG }}
-          PREV_TAG: ${{ 1000.login-ecr.outputs.registry }}/${{ env.API_REPO }}:${{ env.PREV_IMAGE_TAG }}
+          LATEST_TAG: ${{ steps.login-ecr.outputs.registry }}/${{ env.API_REPO }}:${{ env.IMAGE_TAG }}
+          PREV_TAG: ${{ steps.login-ecr.outputs.registry }}/${{ env.API_REPO }}:${{ env.PREV_IMAGE_TAG }}
         if: ${{ github.event.inputs.env_name != 'prod' || github.ref == 'refs/heads/master' }}
         run: |
           docker tag $PREV_TAG $LATEST_TAG
