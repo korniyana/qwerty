@@ -30,7 +30,7 @@ env:
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    1000:
+    steps:
       - name: Set environment variables for prod
         if: ${{ github.event.inputs.env_name == 'prod' }}
         run: |
