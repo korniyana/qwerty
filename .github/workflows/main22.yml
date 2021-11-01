@@ -9,6 +9,7 @@ jobs:
     if: ${{ github.event.workflow_run.conclusion == 'success' }}
     steps:
       - run: echo ${{env.GIT_BRANCH}}
+      - run: echo ${{ github.event.inputs.env_name }}
   on-failure:
     runs-on: ubuntu-latest
     if: ${{ github.event.workflow_run.conclusion == 'failure' }}
