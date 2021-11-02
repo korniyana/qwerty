@@ -16,4 +16,4 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: AFTER
-        run: echo ${{ github.event.inputs.username }}
+        run: echo ${{ inputs.username }}
