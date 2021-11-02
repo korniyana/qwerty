@@ -15,7 +15,7 @@ on:
 
 jobs:
   call-action:
-    uses: figleafteam/figleaf-api/.github/workflows/deploy_action.yml@develop
+    uses: korniyana/qwerty/.github/workflows/deploy_action.yml@develop
     with:
       env_name: ${{ github.event.inputs.env_name }}
       skip_deploy: ${{ github.event.inputs.skip_deploy }}
