@@ -19,3 +19,4 @@ jobs:
     with:
       env_name: ${{ github.event.inputs.env_name }}
       skip_deploy: ${{ github.event.inputs.skip_deploy }}
+      is_rollback: "no"
