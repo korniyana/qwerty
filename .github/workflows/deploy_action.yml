@@ -5,14 +5,17 @@ on:
   workflow_call:
     inputs:
       env_name: #https://github.community/t/can-workflow-dispatch-input-be-option-list/127338/2 no options list yet
+        type: string
         description: 'Environment name (possible values are: tz, tz2, tz3, tz4, sz, prod)'
         required: true
         default: tz
       skip_deploy:
+        type: string
         description: 'Pin image tag only (yes/no)'
         required: false
         default: "no"
       is_rollback:
+        type: string
         description: 'Rollback action (yes/no)'
         required: true
         default: "no"
