@@ -32,10 +32,9 @@ env:
   MIGRATE_SG:
   MIGRATE_SN:
 
-jobs:
-  deploy:
-    runs-on: ubuntu-latest
-    steps:
+runs:
+  using: "composite"
+  steps:
       - name: Set environment variables for prod
         if: ${{ env_name == 'prod' }}
         run: |
@@ -45,7 +44,7 @@ jobs:
           echo "PREV_IMAGE_URL=prev-stable" >> "$GITHUB_ENV"
 
       - name: Set environment variables for stage
-        if: "${{ inputs.env_name == 'sz' }}"
+        if: ${{ inputs.env_name == 'sz' }}
         run: |
           echo "MIGRATE_SG=sg-0598509f6e73766fe" >> "$GITHUB_ENV"
           echo "MIGRATE_SN=subnet-0741b5d355e7de1b8,subnet-0e9f1d3c23dbe716f" >> "$GITHUB_ENV"
