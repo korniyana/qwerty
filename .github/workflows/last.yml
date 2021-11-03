@@ -15,7 +15,7 @@ on:
 
 jobs:
   call-action:
-    uses: korniyana/qwerty/.github/workflows/deploy_action.yml@master
+    uses: korniyana/qwerty/.github/actions/deploy_action@master
     with:
       env_name: ${{ github.event.inputs.env_name }}
       skip_deploy: ${{ github.event.inputs.skip_deploy }}
