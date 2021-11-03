@@ -45,7 +45,7 @@ jobs:
           echo "PREV_IMAGE_URL=prev-stable" >> "$GITHUB_ENV"
 
       - name: Set environment variables for stage
-        if: ${{ github.event.inputs.env_name == 'sz' }}
+        if: "${{ inputs.env_name == 'sz' }}"
         run: |
           echo "MIGRATE_SG=sg-0598509f6e73766fe" >> "$GITHUB_ENV"
           echo "MIGRATE_SN=subnet-0741b5d355e7de1b8,subnet-0e9f1d3c23dbe716f" >> "$GITHUB_ENV"
@@ -53,7 +53,7 @@ jobs:
           echo "PREV_IMAGE_URL=prev-latest" >> "$GITHUB_ENV"
 
       - name: Set environment variables for test
-        if: ${{ github.event.inputs.env_name == 'tz' }}
+        if: "${{ github.event.inputs.env_name == 'tz' }}"
         run: |
           echo "MIGRATE_SG=sg-084a790985b851efe" >> "$GITHUB_ENV"
           echo "MIGRATE_SN=subnet-06a9e39fbb766aefe,subnet-0ef7204022307b0d4" >> "$GITHUB_ENV"
