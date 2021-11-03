@@ -56,58 +56,70 @@ runs:
         fi
 
     - name: Set environment variables for test
-      if: "${{ github.event.inputs.env_name == 'tz' }}"
+      shell: bash
       run: |
-        echo "MIGRATE_SG=sg-084a790985b851efe" >> "$GITHUB_ENV"
-        echo "MIGRATE_SN=subnet-06a9e39fbb766aefe,subnet-0ef7204022307b0d4" >> "$GITHUB_ENV"
-        echo "IMAGE_URL=test" >> "$GITHUB_ENV"
-        echo "PREV_IMAGE_URL=prev-test" >> "$GITHUB_ENV"
+        if [[ "${{inputs.env_name}}" == "tz" ]]; then
+          echo "MIGRATE_SG=sg-084a790985b851efe" >> "$GITHUB_ENV"
+          echo "MIGRATE_SN=subnet-06a9e39fbb766aefe,subnet-0ef7204022307b0d4" >> "$GITHUB_ENV"
+          echo "IMAGE_URL=test" >> "$GITHUB_ENV"
+          echo "PREV_IMAGE_URL=prev-test" >> "$GITHUB_ENV"
+        fi
 
     - name: Set environment variables for test2
-      if: ${{ github.event.inputs.env_name == 'tz2' }}
+      shell: bash
       run: |
-        echo "MIGRATE_SG=sg-084a790985b851efe" >> "$GITHUB_ENV"
-        echo "MIGRATE_SN=subnet-06a9e39fbb766aefe,subnet-0ef7204022307b0d4" >> "$GITHUB_ENV"
-        echo "IMAGE_URL=test2" >> "$GITHUB_ENV"
-        echo "PREV_IMAGE_URL=prev-test2" >> "$GITHUB_ENV"
-        echo "API_SERVICE=Api2" >> "$GITHUB_ENV"
-        echo "EM_SERVICE=EmailMasking2" >> "$GITHUB_ENV"
-        echo "NS_SERVICE=Notification2" >> "$GITHUB_ENV"
-        echo "VAULT_SERVICE=Vault2" >> "$GITHUB_ENV"
-        echo "KV_SERVICE=KVStorage2" >> "$GITHUB_ENV"
-        echo "MIGRATION_TASK=PrivacyApiMigration2" >> "$GITHUB_ENV"
+        if [[ "${{inputs.env_name}}" == "tz2" ]]; then
+          echo "MIGRATE_SG=sg-084a790985b851efe" >> "$GITHUB_ENV"
+          echo "MIGRATE_SN=subnet-06a9e39fbb766aefe,subnet-0ef7204022307b0d4" >> "$GITHUB_ENV"
+          echo "IMAGE_URL=test2" >> "$GITHUB_ENV"
+          echo "PREV_IMAGE_URL=prev-test2" >> "$GITHUB_ENV"
+          echo "API_SERVICE=Api2" >> "$GITHUB_ENV"
+          echo "EM_SERVICE=EmailMasking2" >> "$GITHUB_ENV"
+          echo "NS_SERVICE=Notification2" >> "$GITHUB_ENV"
+          echo "VAULT_SERVICE=Vault2" >> "$GITHUB_ENV"
+          echo "KV_SERVICE=KVStorage2" >> "$GITHUB_ENV"
+          echo "MIGRATION_TASK=PrivacyApiMigration2" >> "$GITHUB_ENV"
+        fi
 
     - name: Set environment variables for test3
-      if: ${{ github.event.inputs.env_name == 'tz3' }}
+      shell: bash
       run: |
-        echo "MIGRATE_SG=sg-084a790985b851efe" >> "$GITHUB_ENV"
-        echo "MIGRATE_SN=subnet-06a9e39fbb766aefe,subnet-0ef7204022307b0d4" >> "$GITHUB_ENV"
-        echo "IMAGE_URL=test3" >> "$GITHUB_ENV"
-        echo "PREV_IMAGE_URL=prev-test3" >> "$GITHUB_ENV"
-        echo "API_SERVICE=Api3" >> "$GITHUB_ENV"
-        echo "EM_SERVICE=EmailMasking3" >> "$GITHUB_ENV"
-        echo "NS_SERVICE=Notification3" >> "$GITHUB_ENV"
-        echo "VAULT_SERVICE=Vault3" >> "$GITHUB_ENV"
-        echo "KV_SERVICE=KVStorage3" >> "$GITHUB_ENV"
-        echo "MIGRATION_TASK=PrivacyApiMigration3" >> "$GITHUB_ENV"
+        if [[ "${{inputs.env_name}}" == "tz3" ]]; then
+          echo "MIGRATE_SG=sg-084a790985b851efe" >> "$GITHUB_ENV"
+          echo "MIGRATE_SN=subnet-06a9e39fbb766aefe,subnet-0ef7204022307b0d4" >> "$GITHUB_ENV"
+          echo "IMAGE_URL=test3" >> "$GITHUB_ENV"
+          echo "PREV_IMAGE_URL=prev-test3" >> "$GITHUB_ENV"
+          echo "API_SERVICE=Api3" >> "$GITHUB_ENV"
+          echo "EM_SERVICE=EmailMasking3" >> "$GITHUB_ENV"
+          echo "NS_SERVICE=Notification3" >> "$GITHUB_ENV"
+          echo "VAULT_SERVICE=Vault3" >> "$GITHUB_ENV"
+          echo "KV_SERVICE=KVStorage3" >> "$GITHUB_ENV"
+          echo "MIGRATION_TASK=PrivacyApiMigration3" >> "$GITHUB_ENV"
+        fi
 
     - name: Set environment variables for test4
-      if: ${{ github.event.inputs.env_name == 'tz4' }}
+      shell: bash
       run: |
-        echo "MIGRATE_SG=sg-084a790985b851efe" >> "$GITHUB_ENV"
-        echo "MIGRATE_SN=subnet-06a9e39fbb766aefe,subnet-0ef7204022307b0d4" >> "$GITHUB_ENV"
-        echo "IMAGE_URL=test4" >> "$GITHUB_ENV"
-        echo "PREV_IMAGE_URL=prev-test4" >> "$GITHUB_ENV"
-        echo "API_SERVICE=Api4" >> "$GITHUB_ENV"
-        echo "EM_SERVICE=EmailMasking4" >> "$GITHUB_ENV"
-        echo "NS_SERVICE=Notification4" >> "$GITHUB_ENV"
-        echo "VAULT_SERVICE=Vault4" >> "$GITHUB_ENV"
-        echo "KV_SERVICE=KVStorage4" >> "$GITHUB_ENV"
-        echo "MIGRATION_TASK=PrivacyApiMigration4" >> "$GITHUB_ENV"
+        if [[ "${{inputs.env_name}}" == "tz4" ]]; then
+          echo "MIGRATE_SG=sg-084a790985b851efe" >> "$GITHUB_ENV"
+          echo "MIGRATE_SN=subnet-06a9e39fbb766aefe,subnet-0ef7204022307b0d4" >> "$GITHUB_ENV"
+          echo "IMAGE_URL=test4" >> "$GITHUB_ENV"
+          echo "PREV_IMAGE_URL=prev-test4" >> "$GITHUB_ENV"
+          echo "API_SERVICE=Api4" >> "$GITHUB_ENV"
+          echo "EM_SERVICE=EmailMasking4" >> "$GITHUB_ENV"
+          echo "NS_SERVICE=Notification4" >> "$GITHUB_ENV"
+          echo "VAULT_SERVICE=Vault4" >> "$GITHUB_ENV"
+          echo "KV_SERVICE=KVStorage4" >> "$GITHUB_ENV"
+          echo "MIGRATION_TASK=PrivacyApiMigration4" >> "$GITHUB_ENV"
+        fi
 
     - name: Check the environment correctness input for ${{github.event.inputs.env_name}}
       if: ${{ !env.IMAGE_URL }}
-      run: exit 1
+      shell: bash
+      run: |
+        if [[ ! "${{env.IMAGE_URL}}" ]]; then
+          exit1
+        fi
 
     - name: Configure AWS credentials from ECR
       uses: aws-actions/configure-aws-credentials@v1
