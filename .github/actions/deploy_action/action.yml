@@ -36,6 +36,7 @@ runs:
   using: "composite"
   steps:
       - name: Set environment variables for prod
+        shell: bash
         if: ${{ env_name == 'prod' }}
         run: |
           echo "MIGRATE_SG=sg-01807502c0cab25e6" >> "$GITHUB_ENV"
