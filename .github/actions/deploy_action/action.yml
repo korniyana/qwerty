@@ -35,6 +35,8 @@ env:
 runs:
   using: "composite"
   steps:
+      - run: echo Hello ${{ inputs.is_rollback }}.
+        shell: bash
       - name: Set environment variables for prod
         shell: bash
         if: ${{ env_name == 'prod' }}
