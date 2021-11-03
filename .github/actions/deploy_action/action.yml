@@ -37,7 +37,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Set environment variables for prod
-        if: ${{ inputs.env_name == 'prod' }}
+        if: ${{ env_name == 'prod' }}
         run: |
           echo "MIGRATE_SG=sg-01807502c0cab25e6" >> "$GITHUB_ENV"
           echo "MIGRATE_SN=subnet-00d96e660f3ae20f9,subnet-04192c2d8532f2182" >> "$GITHUB_ENV"
