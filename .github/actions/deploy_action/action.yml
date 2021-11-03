@@ -37,7 +37,6 @@ runs:
   steps:
     - name: Set environment variables for prod
       shell: bash
-        if: ${{ env_name == 'prod' }}
       run: |
         if [[ "${{inputs.env_name}}" == "prod" ]]; then
           echo "MIGRATE_SG=sg-01807502c0cab25e6" >> "$GITHUB_ENV"
@@ -47,6 +46,7 @@ runs:
         fi
 
     - name: Set environment variables for stage
+      shell: bash
       run: |
         if [[ "${{inputs.env_name}}" == "sz" ]]; then
           echo "MIGRATE_SG=sg-0598509f6e73766fe" >> "$GITHUB_ENV"
