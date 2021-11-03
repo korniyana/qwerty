@@ -114,7 +114,6 @@ runs:
         fi
 
     - name: Check the environment correctness input for ${{github.event.inputs.env_name}}
-      if: ${{ !env.IMAGE_URL }}
       shell: bash
       run: |
         if [[ ! "${{env.IMAGE_URL}}" ]]; then
@@ -133,34 +132,40 @@ runs:
       uses: aws-actions/amazon-ecr-login@v1
 
     - name: Pin last api images as previous
+      shell: bash
       env:
         LATEST_IMAGE: ${{ steps.login-ecr.outputs.registry }}/${{ env.API_REPO }}:${{ env.IMAGE_URL }}
         PREV_IMAGE: ${{ steps.login-ecr.outputs.registry }}/${{ env.API_REPO }}:${{ env.PREV_IMAGE_URL }}
-      if: ${{ github.event.inputs.is_rollback == 'no' && (github.event.inputs.env_name != 'prod' || github.ref == 'refs/heads/master') }}
       run: |
-        docker pull $LATEST_IMAGE
-        docker tag $LATEST_IMAGE $PREV_IMAGE
-        docker push $PREV_IMAGE
+        if [[ "${{inputs.is_rollback}}" == "no" && ("${{inputs.env_name}}" != "prod" || "${{github.ref}}" == 'refs/heads/master') ]]; then
+          docker pull $LATEST_IMAGE
+          docker tag $LATEST_IMAGE $PREV_IMAGE
+          docker push $PREV_IMAGE
+        fi
 
     - name: Pin last api images
       env:
         API_TAG: ${{ steps.login-ecr.outputs.registry }}/${{ env.API_REPO }}:git-sha-${{ github.sha }}
         ENV_API_TAG: ${{ steps.login-ecr.outputs.registry }}/${{ env.API_REPO }}:${{ env.IMAGE_URL }}
-      if: ${{ github.event.inputs.is_rollback == 'no' && (github.event.inputs.env_name != 'prod' || github.ref == 'refs/heads/master') }}
+      shell: bash
       run: |
-        docker pull $API_TAG
-        docker tag $API_TAG $ENV_API_TAG
-        docker push $ENV_API_TAG
+        if [[ "${{inputs.is_rollback}}" == "no" && ("${{inputs.env_name}}" != "prod" || "${{github.ref}}" == 'refs/heads/master') ]]; then
+          docker pull $API_TAG
+          docker tag $API_TAG $ENV_API_TAG
+          docker push $ENV_API_TAG
+        fi
 
     - name: Pin last api images as previous
+      shell: bash
       env:
         LATEST_IMAGE: ${{ steps.login-ecr.outputs.registry }}/${{ env.API_REPO }}:${{ env.IMAGE_URL }}
         PREV_IMAGE: ${{ steps.login-ecr.outputs.registry }}/${{ env.API_REPO }}:${{ env.PREV_IMAGE_URL }}
-      if: ${{ github.event.inputs.is_rollback == 'yes' && (github.event.inputs.env_name != 'prod' || github.ref == 'refs/heads/master') }}
       run: |
-        docker pull $PREV_IMAGE
-        docker tag $PREV_IMAGE $LATEST_IMAGE
-        docker push $LATEST_IMAGE
+        if [[ "${{inputs.is_rollback}}" == "yes" && ("${{inputs.env_name}}" != "prod" || "${{github.ref}}" == 'refs/heads/master') ]]; then
+          docker pull $PREV_IMAGE
+          docker tag $PREV_IMAGE $LATEST_IMAGE
+          docker push $LATEST_IMAGE
+        fi
 
     - name: Pin last migration images
       env:
