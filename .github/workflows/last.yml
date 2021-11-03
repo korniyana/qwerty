@@ -15,8 +15,13 @@ on:
 
 jobs:
   call-action:
-    uses: korniyana/qwerty/.github/actions/deploy_action@master
-    with:
-      env_name: ${{ github.event.inputs.env_name }}
-      skip_deploy: ${{ github.event.inputs.skip_deploy }}
-      is_rollback: "no"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@master
+        name: Checkout
+      - uses: korniyana/qwerty/.github/actions/deploy_action@master
+        name: do
+        with:
+          env_name: ${{ github.event.inputs.env_name }}
+          skip_deploy: ${{ github.event.inputs.skip_deploy }}
+          is_rollback: "no"
