@@ -39,7 +39,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Set environment variables for prod
-        if: ${{ inputs.env_name == 'prod' }}
+        if: ${{ github.event.inputs.env_name == 'prod' }}
         run: |
           echo "MIGRATE_SG=sg-01807502c0cab25e6" >> "$GITHUB_ENV"
           echo "MIGRATE_SN=subnet-00d96e660f3ae20f9,subnet-04192c2d8532f2182" >> "$GITHUB_ENV"
@@ -47,7 +47,7 @@ jobs:
           echo "PREV_IMAGE_URL=prev-stable" >> "$GITHUB_ENV"
 
       - name: Set environment variables for stage
-        if: ${{ inputs.env_name == 'sz' }}
+        if: ${{ github.event.inputs.env_name == 'sz' }}
         run: |
           echo "MIGRATE_SG=sg-0598509f6e73766fe" >> "$GITHUB_ENV"
           echo "MIGRATE_SN=subnet-0741b5d355e7de1b8,subnet-0e9f1d3c23dbe716f" >> "$GITHUB_ENV"
@@ -55,7 +55,7 @@ jobs:
           echo "PREV_IMAGE_URL=prev-latest" >> "$GITHUB_ENV"
 
       - name: Set environment variables for test
-        if: ${{ inputs.env_name == 'tz' }}
+        if: ${{ github.event.inputs.env_name == 'tz' }}
         run: |
           echo "MIGRATE_SG=sg-084a790985b851efe" >> "$GITHUB_ENV"
           echo "MIGRATE_SN=subnet-06a9e39fbb766aefe,subnet-0ef7204022307b0d4" >> "$GITHUB_ENV"
@@ -63,7 +63,7 @@ jobs:
           echo "PREV_IMAGE_URL=prev-test" >> "$GITHUB_ENV"
 
       - name: Set environment variables for test2
-        if: ${{ inputs.env_name == 'tz2' }}
+        if: ${{ github.event.inputs.env_name == 'tz2' }}
         run: |
           echo "MIGRATE_SG=sg-084a790985b851efe" >> "$GITHUB_ENV"
           echo "MIGRATE_SN=subnet-06a9e39fbb766aefe,subnet-0ef7204022307b0d4" >> "$GITHUB_ENV"
@@ -77,7 +77,7 @@ jobs:
           echo "MIGRATION_TASK=PrivacyApiMigration2" >> "$GITHUB_ENV"
 
       - name: Set environment variables for test3
-        if: ${{ inputs.env_name == 'tz3' }}
+        if: ${{ github.event.inputs.env_name == 'tz3' }}
         run: |
           echo "MIGRATE_SG=sg-084a790985b851efe" >> "$GITHUB_ENV"
           echo "MIGRATE_SN=subnet-06a9e39fbb766aefe,subnet-0ef7204022307b0d4" >> "$GITHUB_ENV"
@@ -91,7 +91,7 @@ jobs:
           echo "MIGRATION_TASK=PrivacyApiMigration3" >> "$GITHUB_ENV"
 
       - name: Set environment variables for test4
-        if: ${{ inputs.env_name == 'tz4' }}
+        if: ${{ github.event.inputs.env_name == 'tz4' }}
         run: |
           echo "MIGRATE_SG=sg-084a790985b851efe" >> "$GITHUB_ENV"
           echo "MIGRATE_SN=subnet-06a9e39fbb766aefe,subnet-0ef7204022307b0d4" >> "$GITHUB_ENV"
@@ -104,7 +104,7 @@ jobs:
           echo "KV_SERVICE=KVStorage4" >> "$GITHUB_ENV"
           echo "MIGRATION_TASK=PrivacyApiMigration4" >> "$GITHUB_ENV"
 
-      - name: Check the environment correctness input for ${{inputs.env_name}}
+      - name: Check the environment correctness input for ${{github.event.inputs.env_name}}
         if: ${{ !env.IMAGE_URL }}
         run: exit 1
 
@@ -123,7 +123,7 @@ jobs:
         env:
           LATEST_IMAGE: ${{ steps.login-ecr.outputs.registry }}/${{ env.API_REPO }}:${{ env.IMAGE_URL }}
           PREV_IMAGE: ${{ steps.login-ecr.outputs.registry }}/${{ env.API_REPO }}:${{ env.PREV_IMAGE_URL }}
-        if: ${{ inputs.is_rollback == 'no' && (inputs.env_name != 'prod' || github.ref == 'refs/heads/master') }}
+        if: ${{ github.event.inputs.is_rollback == 'no' && (github.event.inputs.env_name != 'prod' || github.ref == 'refs/heads/master') }}
         run: |
           docker pull $LATEST_IMAGE
           docker tag $LATEST_IMAGE $PREV_IMAGE
@@ -133,7 +133,7 @@ jobs:
         env:
           API_TAG: ${{ steps.login-ecr.outputs.registry }}/${{ env.API_REPO }}:git-sha-${{ github.sha }}
           ENV_API_TAG: ${{ steps.login-ecr.outputs.registry }}/${{ env.API_REPO }}:${{ env.IMAGE_URL }}
-        if: ${{ inputs.is_rollback == 'no' && (inputs.env_name != 'prod' || github.ref == 'refs/heads/master') }}
+        if: ${{ github.event.inputs.is_rollback == 'no' && (github.event.inputs.env_name != 'prod' || github.ref == 'refs/heads/master') }}
         run: |
           docker pull $API_TAG
           docker tag $API_TAG $ENV_API_TAG
@@ -143,7 +143,7 @@ jobs:
         env:
           LATEST_IMAGE: ${{ steps.login-ecr.outputs.registry }}/${{ env.API_REPO }}:${{ env.IMAGE_URL }}
           PREV_IMAGE: ${{ steps.login-ecr.outputs.registry }}/${{ env.API_REPO }}:${{ env.PREV_IMAGE_URL }}
-        if: ${{ inputs.is_rollback == 'yes' && (inputs.env_name != 'prod' || github.ref == 'refs/heads/master') }}
+        if: ${{ github.event.inputs.is_rollback == 'yes' && (github.event.inputs.env_name != 'prod' || github.ref == 'refs/heads/master') }}
         run: |
           docker pull $PREV_IMAGE
           docker tag $PREV_IMAGE $LATEST_IMAGE
@@ -153,14 +153,14 @@ jobs:
         env:
           MIGRATION_TAG: ${{ steps.login-ecr.outputs.registry }}/${{ env.MIGRATION_REPO }}:git-sha-${{ github.sha }}
           ENV_MIGRATION_TAG: ${{ steps.login-ecr.outputs.registry }}/${{ env.MIGRATION_REPO }}:${{ env.IMAGE_URL }}
-        if: ${{ inputs.env_name != 'prod' || github.ref == 'refs/heads/master' }}
+        if: ${{ github.event.inputs.env_name != 'prod' || github.ref == 'refs/heads/master' }}
         run: |
           docker pull $MIGRATION_TAG
           docker tag $MIGRATION_TAG $ENV_MIGRATION_TAG
           docker push $ENV_MIGRATION_TAG
 
       - name: Configure AWS credentials from TEST
-        if: startsWith(inputs.env_name, 'tz')
+        if: startsWith(github.event.inputs.env_name, 'tz')
         uses: aws-actions/configure-aws-credentials@v1
         with:
           aws-access-key-id: ${{ secrets.TEST_AWS_ACCESS_KEY_ID }}
@@ -168,7 +168,7 @@ jobs:
           aws-region: us-east-1
 
       - name: Configure AWS credentials from STAGE
-        if: ${{ inputs.env_name == 'sz' && inputs.skip_deploy != 'yes' }}
+        if: ${{ github.event.inputs.env_name == 'sz' && github.event.inputs.skip_deploy != 'yes' }}
         uses: aws-actions/configure-aws-credentials@v1
         with:
           aws-access-key-id: ${{ secrets.STAGE_AWS_ACCESS_KEY_ID }}
@@ -176,7 +176,7 @@ jobs:
           aws-region: us-east-1
 
       - name: Configure AWS credentials from PROD
-        if: ${{ inputs.env_name == 'prod' && inputs.skip_deploy != 'yes' }}
+        if: ${{ github.event.inputs.env_name == 'prod' && github.event.inputs.skip_deploy != 'yes' }}
         uses: aws-actions/configure-aws-credentials@v1
         with:
           aws-access-key-id: ${{ secrets.PROD_AWS_ACCESS_KEY_ID }}
@@ -184,7 +184,7 @@ jobs:
           aws-region: us-east-1
 
       - name: Run migrations
-        if: ${{ inputs.skip_deploy != 'yes' }}
+        if: ${{ github.event.inputs.skip_deploy != 'yes' }}
         env:
           NETCFG: "awsvpcConfiguration={subnets=[${{ env.MIGRATE_SN }}],securityGroups=[${{ env.MIGRATE_SG }}],assignPublicIp=DISABLED}"
         run: |
@@ -193,33 +193,33 @@ jobs:
           RC=`aws ecs describe-tasks --cluster PrivacyApp --tasks $MIGRATE_ARN --query "tasks[0].containers[0].exitCode"`
           exit $RC
 
-      - name: Deploy api service to ${{inputs.env_name}}
-        if: ${{ inputs.skip_deploy != 'yes' }}
+      - name: Deploy api service to ${{github.event.inputs.env_name}}
+        if: ${{ github.event.inputs.skip_deploy != 'yes' }}
         run: |
           aws ecs update-service --cluster PrivacyApp --service $API_SERVICE --force-new-deployment
 
-      - name: Deploy emailmasking service ${{inputs.env_name}}
-        if: ${{ inputs.skip_deploy != 'yes' }}
+      - name: Deploy emailmasking service ${{github.event.inputs.env_name}}
+        if: ${{ github.event.inputs.skip_deploy != 'yes' }}
         run: |
           aws ecs update-service --cluster PrivacyApp --service $EM_SERVICE --force-new-deployment
 
-      - name: Deploy vault service to ${{inputs.env_name}}
-        if: ${{ inputs.skip_deploy != 'yes' }}
+      - name: Deploy vault service to ${{github.event.inputs.env_name}}
+        if: ${{ github.event.inputs.skip_deploy != 'yes' }}
         run: |
           aws ecs update-service --cluster PrivacyApp --service $VAULT_SERVICE --force-new-deployment
 
-      - name: Deploy kv service to ${{inputs.env_name}}
-        if: ${{ inputs.skip_deploy != 'yes' }}
+      - name: Deploy kv service to ${{github.event.inputs.env_name}}
+        if: ${{ github.event.inputs.skip_deploy != 'yes' }}
         run: |
           aws ecs update-service --cluster PrivacyApp --service $KV_SERVICE --force-new-deployment
 
-      - name: Deploy notification service to ${{inputs.env_name}}
-        if: ${{ inputs.skip_deploy != 'yes' }}
+      - name: Deploy notification service to ${{github.event.inputs.env_name}}
+        if: ${{ github.event.inputs.skip_deploy != 'yes' }}
         run: |
           aws ecs update-service --cluster PrivacyApp --service $NS_SERVICE --force-new-deployment
 
-      - name: Wait until services will stable on ${{inputs.env_name}}
-        if: ${{ inputs.skip_deploy != 'yes' }}
+      - name: Wait until services will stable on ${{github.event.inputs.env_name}}
+        if: ${{ github.event.inputs.skip_deploy != 'yes' }}
         run: |
           aws ecs wait services-stable --cluster PrivacyApp --services "$API_SERVICE" "$EM_SERVICE" "$VAULT_SERVICE" "$NS_SERVICE" "$KV_SERVICE"
 
@@ -232,38 +232,38 @@ jobs:
         env:
           LATEST_IMAGE: ${{ steps.login-ecr.outputs.registry }}/${{ env.API_REPO }}:${{ env.IMAGE_URL }}
           PREV_IMAGE: ${{ steps.login-ecr.outputs.registry }}/${{ env.API_REPO }}:${{ env.PREV_IMAGE_URL }}
-        if: ${{ inputs.env_name != 'prod' || github.ref == 'refs/heads/master' }}
+        if: ${{ github.event.inputs.env_name != 'prod' || github.ref == 'refs/heads/master' }}
         run: |
           docker pull $PREV_IMAGE
           docker tag $PREV_IMAGE $LATEST_IMAGE
           docker push $LATEST_IMAGE
 
-      - name: Deploy api service to ${{inputs.env_name}}
-        if: ${{ inputs.skip_deploy != 'yes' }}
+      - name: Deploy api service to ${{github.event.inputs.env_name}}
+        if: ${{ github.event.inputs.skip_deploy != 'yes' }}
         run: |
           aws ecs update-service --cluster PrivacyApp --service $API_SERVICE --force-new-deployment
 
-      - name: Deploy emailmasking service ${{inputs.env_name}}
-        if: ${{ inputs.skip_deploy != 'yes' }}
+      - name: Deploy emailmasking service ${{github.event.inputs.env_name}}
+        if: ${{ github.event.inputs.skip_deploy != 'yes' }}
         run: |
           aws ecs update-service --cluster PrivacyApp --service $EM_SERVICE --force-new-deployment
 
-      - name: Deploy vault service to ${{inputs.env_name}}
-        if: ${{ inputs.skip_deploy != 'yes' }}
+      - name: Deploy vault service to ${{github.event.inputs.env_name}}
+        if: ${{ github.event.inputs.skip_deploy != 'yes' }}
         run: |
           aws ecs update-service --cluster PrivacyApp --service $VAULT_SERVICE --force-new-deployment
 
-      - name: Deploy kv service to ${{inputs.env_name}}
-        if: ${{ inputs.skip_deploy != 'yes' }}
+      - name: Deploy kv service to ${{github.event.inputs.env_name}}
+        if: ${{ github.event.inputs.skip_deploy != 'yes' }}
         run: |
           aws ecs update-service --cluster PrivacyApp --service $KV_SERVICE --force-new-deployment
 
-      - name: Deploy notification service to ${{inputs.env_name}}
-        if: ${{ inputs.skip_deploy != 'yes' }}
+      - name: Deploy notification service to ${{github.event.inputs.env_name}}
+        if: ${{ github.event.inputs.skip_deploy != 'yes' }}
         run: |
           aws ecs update-service --cluster PrivacyApp --service $NS_SERVICE --force-new-deployment
 
-      - name: Wait until services will stable on ${{inputs.env_name}}
-        if: ${{ inputs.skip_deploy != 'yes' }}
+      - name: Wait until services will stable on ${{github.event.inputs.env_name}}
+        if: ${{ github.event.inputs.skip_deploy != 'yes' }}
         run: |
           aws ecs wait services-stable --cluster PrivacyApp --services "$API_SERVICE" "$EM_SERVICE" "$VAULT_SERVICE" "$NS_SERVICE" "$KV_SERVICE"
