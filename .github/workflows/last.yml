@@ -17,7 +17,7 @@ jobs:
   call-action:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@latest
+      - uses: actions/checkout@v1
         name: Checkout
       - uses: ../.github/actions/deploy_action@latest
         name: do
