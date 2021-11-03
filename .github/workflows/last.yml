@@ -17,8 +17,7 @@ jobs:
   call-action:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@master
-        name: Checkout
+      - uses: actions/checkout@v2
       - uses: korniyana/qwerty/.github/actions/deploy_action@master
         name: do
         with:
