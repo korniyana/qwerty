@@ -19,7 +19,7 @@ jobs:
     steps:
       - uses: actions/checkout@v1
         name: Checkout
-      - uses: ../.github/actions/deploy_action@latest
+      - uses: ../.github/actions/deploy_action@master
         name: do
         with:
           env_name: ${{ github.event.inputs.env_name }}
