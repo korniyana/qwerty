@@ -1,24 +1,22 @@
 ---
 name: 'Deploy'
 
-on:
-  workflow_call:
-    inputs:
-      env_name: #https://github.community/t/can-workflow-dispatch-input-be-option-list/127338/2 no options list yet
-        type: string
-        description: 'Environment name (possible values are: tz, tz2, tz3, tz4, sz, prod)'
-        required: true
-        default: tz
-      skip_deploy:
-        type: string
-        description: 'Pin image tag only (yes/no)'
-        required: false
-        default: "no"
-      is_rollback:
-        type: string
-        description: 'Rollback action (yes/no)'
-        required: true
-        default: "no"
+inputs:
+  env_name: #https://github.community/t/can-workflow-dispatch-input-be-option-list/127338/2 no options list yet
+    type: string
+    description: 'Environment name (possible values are: tz, tz2, tz3, tz4, sz, prod)'
+    required: true
+    default: tz
+  skip_deploy:
+    type: string
+    description: 'Pin image tag only (yes/no)'
+    required: false
+    default: "no"
+  is_rollback:
+    type: string
+    description: 'Rollback action (yes/no)'
+    required: true
+    default: "no"
 
 env:
   API_REPO: figleaf-api
@@ -39,7 +37,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Set environment variables for prod
-        if: ${{ github.event.inputs.env_name == 'prod' }}
+        if: ${{ inputs.env_name == 'prod' }}
         run: |
           echo "MIGRATE_SG=sg-01807502c0cab25e6" >> "$GITHUB_ENV"
           echo "MIGRATE_SN=subnet-00d96e660f3ae20f9,subnet-04192c2d8532f2182" >> "$GITHUB_ENV"
