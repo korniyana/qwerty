@@ -121,7 +121,8 @@ jobs:
         uses: aws-actions/amazon-ecr-login@v1
 
       - name: Save previous image
-        env: API_REPO: ${{ env.API_REPO }}
+        env: 
+          API_REPO: ${{ env.API_REPO }}
         run: |
           echo "PREV_IMAGE_HASH=$(docker image inspect --format='{{.ContainerConfig.Image}}' $API_REPO)" >> "$GITHUB_ENV"
 
