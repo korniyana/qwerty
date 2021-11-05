@@ -1,0 +1,22 @@
+---
+name: Deploy
+
+on:
+  workflow_dispatch:
+    inputs:
+      env_name: #https://github.community/t/can-workflow-dispatch-input-be-option-list/127338/2 no options list yet
+        description: 'Environment name (possible values are: tz, tz2, tz3, tz4, sz, prod)'
+        required: true
+        default: tz
+      skip_deploy:
+        description: 'Pin image tag only (yes/no)'
+        required: false
+        default: "no"
+
+jobs:
+  call-action:
+    uses: korniyana/fqwerty/.github/workflows/main4.yml@master
+    with:
+      env_name: ${{ github.event.inputs.env_name }}
+      skip_deploy: ${{ github.event.inputs.skip_deploy }}
+      is_rollback: "no"
