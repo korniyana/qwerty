@@ -5,18 +5,35 @@ on:
   workflow_dispatch:
     inputs:
       env_name: #https://github.community/t/can-workflow-dispatch-input-be-option-list/127338/2 no options list yet
+        type: string
         description: 'Environment name (possible values are: tz, tz2, tz3, tz4, sz, prod)'
         required: true
         default: tz
       skip_deploy:
+        type: string
         description: 'Pin image tag only (yes/no)'
         required: false
+        default: "no"
+      is_revert:
+        type: string
+        description: 'Revert action (yes/no)'
+        required: true
         default: "no"
 
 env:
   API_REPO: figleaf-api
+  MIGRATION_REPO: figleaf-api-migrate
+  API_SERVICE: Api
+  EM_SERVICE: EmailMasking
+  NS_SERVICE: Notification
+  VAULT_SERVICE: Vault
+  KV_SERVICE: KVStorage
+  MIGRATION_TASK: PrivacyApiMigration
   IMAGE_TAG:
-
+  PREV_IMAGE_TAG:
+  PREV_IMAGE_HASH:
+  MIGRATE_SG:
+  MIGRATE_SN:
 
 jobs:
   deploy:
@@ -25,38 +42,240 @@ jobs:
       - name: Set environment variables for prod
         if: ${{ github.event.inputs.env_name == 'prod' }}
         run: |
+          echo "MIGRATE_SG=sg-01807502c0cab25e6" >> "$GITHUB_ENV"
+          echo "MIGRATE_SN=subnet-00d96e660f3ae20f9,subnet-04192c2d8532f2182" >> "$GITHUB_ENV"
           echo "IMAGE_TAG=stable" >> "$GITHUB_ENV"
+          echo "PREV_IMAGE_TAG=prev-stable" >> "$GITHUB_ENV"
 
       - name: Set environment variables for stage
         if: ${{ github.event.inputs.env_name == 'sz' }}
         run: |
+          echo "MIGRATE_SG=sg-0598509f6e73766fe" >> "$GITHUB_ENV"
+          echo "MIGRATE_SN=subnet-0741b5d355e7de1b8,subnet-0e9f1d3c23dbe716f" >> "$GITHUB_ENV"
           echo "IMAGE_TAG=latest" >> "$GITHUB_ENV"
+          echo "PREV_IMAGE_TAG=prev-latest" >> "$GITHUB_ENV"
 
       - name: Set environment variables for test
         if: ${{ github.event.inputs.env_name == 'tz' }}
         run: |
+          echo "MIGRATE_SG=sg-084a790985b851efe" >> "$GITHUB_ENV"
+          echo "MIGRATE_SN=subnet-06a9e39fbb766aefe,subnet-0ef7204022307b0d4" >> "$GITHUB_ENV"
           echo "IMAGE_TAG=test" >> "$GITHUB_ENV"
+          echo "PREV_IMAGE_TAG=prev-test" >> "$GITHUB_ENV"
 
       - name: Set environment variables for test2
         if: ${{ github.event.inputs.env_name == 'tz2' }}
         run: |
+          echo "MIGRATE_SG=sg-084a790985b851efe" >> "$GITHUB_ENV"
+          echo "MIGRATE_SN=subnet-06a9e39fbb766aefe,subnet-0ef7204022307b0d4" >> "$GITHUB_ENV"
           echo "IMAGE_TAG=test2" >> "$GITHUB_ENV"
+          echo "PREV_IMAGE_TAG=prev-test2" >> "$GITHUB_ENV"
+          echo "API_SERVICE=Api2" >> "$GITHUB_ENV"
+          echo "EM_SERVICE=EmailMasking2" >> "$GITHUB_ENV"
+          echo "NS_SERVICE=Notification2" >> "$GITHUB_ENV"
+          echo "VAULT_SERVICE=Vault2" >> "$GITHUB_ENV"
+          echo "KV_SERVICE=KVStorage2" >> "$GITHUB_ENV"
+          echo "MIGRATION_TASK=PrivacyApiMigration2" >> "$GITHUB_ENV"
 
       - name: Set environment variables for test3
         if: ${{ github.event.inputs.env_name == 'tz3' }}
         run: |
+          echo "MIGRATE_SG=sg-084a790985b851efe" >> "$GITHUB_ENV"
+          echo "MIGRATE_SN=subnet-06a9e39fbb766aefe,subnet-0ef7204022307b0d4" >> "$GITHUB_ENV"
           echo "IMAGE_TAG=test3" >> "$GITHUB_ENV"
+          echo "PREV_IMAGE_TAG=prev-test3" >> "$GITHUB_ENV"
+          echo "API_SERVICE=Api3" >> "$GITHUB_ENV"
+          echo "EM_SERVICE=EmailMasking3" >> "$GITHUB_ENV"
+          echo "NS_SERVICE=Notification3" >> "$GITHUB_ENV"
+          echo "VAULT_SERVICE=Vault3" >> "$GITHUB_ENV"
+          echo "KV_SERVICE=KVStorage3" >> "$GITHUB_ENV"
+          echo "MIGRATION_TASK=PrivacyApiMigration3" >> "$GITHUB_ENV"
 
       - name: Set environment variables for test4
         if: ${{ github.event.inputs.env_name == 'tz4' }}
         run: |
+          echo "MIGRATE_SG=sg-084a790985b851efe" >> "$GITHUB_ENV"
+          echo "MIGRATE_SN=subnet-06a9e39fbb766aefe,subnet-0ef7204022307b0d4" >> "$GITHUB_ENV"
           echo "IMAGE_TAG=test4" >> "$GITHUB_ENV"
+          echo "PREV_IMAGE_TAG=prev-test4" >> "$GITHUB_ENV"
+          echo "API_SERVICE=Api4" >> "$GITHUB_ENV"
+          echo "EM_SERVICE=EmailMasking4" >> "$GITHUB_ENV"
+          echo "NS_SERVICE=Notification4" >> "$GITHUB_ENV"
+          echo "VAULT_SERVICE=Vault4" >> "$GITHUB_ENV"
+          echo "KV_SERVICE=KVStorage4" >> "$GITHUB_ENV"
+          echo "MIGRATION_TASK=PrivacyApiMigration4" >> "$GITHUB_ENV"
 
-      - name: Check the environment correctness input  ${{github.event.inputs.env_name}}
+      - name: Check the environment correctness input for ${{github.event.inputs.env_name}}
         if: ${{ !env.IMAGE_TAG }}
+        run: exit 1
+
+      - name: Configure AWS credentials from ECR
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.ECR_AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.ECR_AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-1
+
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v1
+
+      - name: Save previous image
+        env:
+          API_REPO: ${{ env.API_REPO }}
         run: |
-          echo "test ${{github.event.inputs.env_name}}"
-          exit 1
-          
-      - name: AFTER
-        run: echo "test"
+          echo "PREV_IMAGE_HASH=$(docker image inspect --format='{{.ContainerConfig.Image}}' $API_REPO)" >> "$GITHUB_ENV"
+
+      - name: Pin last api images
+        env:
+          API_TAG: ${{ steps.login-ecr.outputs.registry }}/${{ env.API_REPO }}:git-sha-${{ github.sha }}
+          ENV_API_TAG: ${{ steps.login-ecr.outputs.registry }}/${{ env.API_REPO }}:${{ env.IMAGE_TAG }}
+        if: ${{ github.event.inputs.is_revert == 'no' && (github.event.inputs.env_name != 'prod' || github.ref == 'refs/heads/master') }}
+        run: |
+          docker pull $API_TAG
+          docker tag $API_TAG $ENV_API_TAG
+          docker push $ENV_API_TAG
+
+      - name: Pin previous api images as latest
+        env:
+          LATEST_IMAGE: ${{ steps.login-ecr.outputs.registry }}/${{ env.API_REPO }}:${{ env.IMAGE_TAG }}
+          PREV_IMAGE: ${{ steps.login-ecr.outputs.registry }}/${{ env.API_REPO }}:${{ env.PREV_IMAGE_TAG }}
+        if: ${{ github.event.inputs.is_revert == 'yes' && (github.event.inputs.env_name != 'prod' || github.ref == 'refs/heads/master') }}
+        run: |
+          docker pull $PREV_IMAGE
+          docker tag $PREV_IMAGE $LATEST_IMAGE
+          docker push $LATEST_IMAGE
+
+      - name: Pin last migration images
+        env:
+          MIGRATION_TAG: ${{ steps.login-ecr.outputs.registry }}/${{ env.MIGRATION_REPO }}:git-sha-${{ github.sha }}
+          ENV_MIGRATION_TAG: ${{ steps.login-ecr.outputs.registry }}/${{ env.MIGRATION_REPO }}:${{ env.IMAGE_TAG }}
+        if: ${{ github.event.inputs.env_name != 'prod' || github.ref == 'refs/heads/master' }}
+        run: |
+          docker pull $MIGRATION_TAG
+          docker tag $MIGRATION_TAG $ENV_MIGRATION_TAG
+          docker push $ENV_MIGRATION_TAG
+
+      - name: Configure AWS credentials from TEST
+        if: startsWith(github.event.inputs.env_name, 'tz')
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.TEST_AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.TEST_AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-1
+
+      - name: Configure AWS credentials from STAGE
+        if: ${{ github.event.inputs.env_name == 'sz' && github.event.inputs.skip_deploy != 'yes' }}
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.STAGE_AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.STAGE_AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-1
+
+      - name: Configure AWS credentials from PROD
+        if: ${{ github.event.inputs.env_name == 'prod' && github.event.inputs.skip_deploy != 'yes' }}
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.PROD_AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.PROD_AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-1
+
+      - name: Run migrations
+        if: ${{ github.event.inputs.skip_deploy != 'yes' }}
+        env:
+          NETCFG: "awsvpcConfiguration={subnets=[${{ env.MIGRATE_SN }}],securityGroups=[${{ env.MIGRATE_SG }}],assignPublicIp=DISABLED}"
+        run: |
+          MIGRATE_ARN=`aws ecs run-task --cluster PrivacyApp --count 1 --launch-type FARGATE --task-definition $MIGRATION_TASK --network-configuration $NETCFG | jq -r '.tasks[0].taskArn'`
+          aws ecs wait tasks-stopped --cluster PrivacyApp --tasks $MIGRATE_ARN
+          RC=`aws ecs describe-tasks --cluster PrivacyApp --tasks $MIGRATE_ARN --query "tasks[0].containers[0].exitCode"`
+          exit $RC
+
+      - name: Deploy api service to ${{github.event.inputs.env_name}}
+        if: ${{ github.event.inputs.skip_deploy != 'yes' }}
+        run: |
+          aws ecs update-service --cluster PrivacyApp --service $API_SERVICE --force-new-deployment
+
+      - name: Deploy emailmasking service ${{github.event.inputs.env_name}}
+        if: ${{ github.event.inputs.skip_deploy != 'yes' }}
+        run: |
+          aws ecs update-service --cluster PrivacyApp --service $EM_SERVICE --force-new-deployment
+
+      - name: Deploy vault service to ${{github.event.inputs.env_name}}
+        if: ${{ github.event.inputs.skip_deploy != 'yes' }}
+        run: |
+          aws ecs update-service --cluster PrivacyApp --service $VAULT_SERVICE --force-new-deployment
+
+      - name: Deploy kv service to ${{github.event.inputs.env_name}}
+        if: ${{ github.event.inputs.skip_deploy != 'yes' }}
+        run: |
+          aws ecs update-service --cluster PrivacyApp --service $KV_SERVICE --force-new-deployment
+
+      - name: Deploy notification service to ${{github.event.inputs.env_name}}
+        if: ${{ github.event.inputs.skip_deploy != 'yes' }}
+        run: |
+          aws ecs update-service --cluster PrivacyApp --service $NS_SERVICE --force-new-deployment
+
+      - name: Wait until services will stable on ${{github.event.inputs.env_name}}
+        if: ${{ github.event.inputs.skip_deploy != 'yes' }}
+        run: |
+          aws ecs wait services-stable --cluster PrivacyApp --services "$API_SERVICE" "$EM_SERVICE" "$VAULT_SERVICE" "$NS_SERVICE" "$KV_SERVICE"
+
+  pin_image:
+    needs: deploy
+    if: always() && (needs.deploy.result == 'success')
+    runs-on: ubuntu-latest
+    steps:
+      - name: Pin old api image as previous
+        env:
+          OLD_IMAGE: ${{ steps.login-ecr.outputs.registry }}/${{ env.API_REPO }}:${{ env.PREV_IMAGE_HASH }}
+          PREV_IMAGE: ${{ steps.login-ecr.outputs.registry }}/${{ env.API_REPO }}:${{ env.PREV_IMAGE_TAG }}
+        if: ${{ github.event.inputs.is_revert == 'no' && (github.event.inputs.env_name != 'prod' || github.ref == 'refs/heads/master') }}
+        run: |
+          docker pull $OLD_IMAGE
+          docker tag $OLD_IMAGE $PREV_IMAGE
+          docker push $PREV_IMAGE
+
+  rollback:
+    needs: deploy
+    if: always() && (needs.deploy.result == 'failure')
+    runs-on: ubuntu-latest
+    steps:
+      - name: Pin old api image as latest
+        env:
+          LATEST_IMAGE: ${{ steps.login-ecr.outputs.registry }}/${{ env.API_REPO }}:${{ env.IMAGE_TAG }}
+          OLD_IMAGE: ${{ steps.login-ecr.outputs.registry }}/${{ env.API_REPO }}:${{ env.PREV_IMAGE_HASH }}
+        if: ${{ github.event.inputs.env_name != 'prod' || github.ref == 'refs/heads/master' }}
+        run: |
+          docker pull $OLD_IMAGE
+          docker tag $OLD_IMAGE $LATEST_IMAGE
+          docker push $LATEST_IMAGE
+
+      - name: Deploy api service to ${{github.event.inputs.env_name}}
+        if: ${{ github.event.inputs.skip_deploy != 'yes' }}
+        run: |
+          aws ecs update-service --cluster PrivacyApp --service $API_SERVICE --force-new-deployment
+
+      - name: Deploy emailmasking service ${{github.event.inputs.env_name}}
+        if: ${{ github.event.inputs.skip_deploy != 'yes' }}
+        run: |
+          aws ecs update-service --cluster PrivacyApp --service $EM_SERVICE --force-new-deployment
+
+      - name: Deploy vault service to ${{github.event.inputs.env_name}}
+        if: ${{ github.event.inputs.skip_deploy != 'yes' }}
+        run: |
+          aws ecs update-service --cluster PrivacyApp --service $VAULT_SERVICE --force-new-deployment
+
+      - name: Deploy kv service to ${{github.event.inputs.env_name}}
+        if: ${{ github.event.inputs.skip_deploy != 'yes' }}
+        run: |
+          aws ecs update-service --cluster PrivacyApp --service $KV_SERVICE --force-new-deployment
+
+      - name: Deploy notification service to ${{github.event.inputs.env_name}}
+        if: ${{ github.event.inputs.skip_deploy != 'yes' }}
+        run: |
+          aws ecs update-service --cluster PrivacyApp --service $NS_SERVICE --force-new-deployment
+
+      - name: Wait until services will stable on ${{github.event.inputs.env_name}}
+        if: ${{ github.event.inputs.skip_deploy != 'yes' }}
+        run: |
+          aws ecs wait services-stable --cluster PrivacyApp --services "$API_SERVICE" "$EM_SERVICE" "$VAULT_SERVICE" "$NS_SERVICE" "$KV_SERVICE"
