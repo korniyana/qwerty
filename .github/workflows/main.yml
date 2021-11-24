@@ -21,8 +21,8 @@ on:
         default: "no"
 
 env:
-  API_REPO: figleaf-api
-  MIGRATION_REPO: figleaf-api-migrate
+  IMAGE_NAME: figleaf-api
+  MIGRATION_IMAGE_NAME: figleaf-api-migrate
   API_SERVICE: Api
   EM_SERVICE: EmailMasking
   NS_SERVICE: Notification
@@ -122,24 +122,29 @@ jobs:
 
       - name: Save previous image
         env:
-          API_REPO: ${{ env.API_REPO }}
+          PREV_IMAGE: ${{ steps.login-ecr.outputs.registry }}/${{ env.IMAGE_NAME }}:${{ env.PREV_IMAGE_TAG }}
+          IMAGE: ${{ steps.login-ecr.outputs.registry }}/${{ env.IMAGE_NAME }}
         run: |
-          echo "PREV_IMAGE_HASH=$(docker image inspect --format='{{.ContainerConfig.Image}}' $API_REPO)" >> "$GITHUB_ENV"
+          if docker pull PREV_IMAGE; then
+            echo "PREV_IMAGE_HASH=$(docker image inspect --format='{{.ContainerConfig.Image}}' $PREV_IMAGE)" >> "$GITHUB_ENV"
+          else
+            echo "PREV_IMAGE_HASH=$(docker image inspect --format='{{.ContainerConfig.Image}}' $IMAGE)" >> "$GITHUB_ENV"
+          fi
 
       - name: Pin last api images
         env:
-          API_TAG: ${{ steps.login-ecr.outputs.registry }}/${{ env.API_REPO }}:git-sha-${{ github.sha }}
-          ENV_API_TAG: ${{ steps.login-ecr.outputs.registry }}/${{ env.API_REPO }}:${{ env.IMAGE_TAG }}
+          API_IMAGE: ${{ steps.login-ecr.outputs.registry }}/${{ env.IMAGE_NAME }}:git-sha-${{ github.sha }}
+          ENV_API_IMAGE: ${{ steps.login-ecr.outputs.registry }}/${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }}
         if: ${{ github.event.inputs.is_revert == 'no' && (github.event.inputs.env_name != 'prod' || github.ref == 'refs/heads/master') }}
         run: |
-          docker pull $API_TAG
-          docker tag $API_TAG $ENV_API_TAG
-          docker push $ENV_API_TAG
+          docker pull $API_IMAGE
+          docker tag $API_IMAGE $ENV_API_IMAGE
+          docker push $ENV_API_IMAGE
 
       - name: Pin previous api images as latest
         env:
-          LATEST_IMAGE: ${{ steps.login-ecr.outputs.registry }}/${{ env.API_REPO }}:${{ env.IMAGE_TAG }}
-          PREV_IMAGE: ${{ steps.login-ecr.outputs.registry }}/${{ env.API_REPO }}:${{ env.PREV_IMAGE_TAG }}
+          LATEST_IMAGE: ${{ steps.login-ecr.outputs.registry }}/${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }}
+          PREV_IMAGE: ${{ steps.login-ecr.outputs.registry }}/${{ env.IMAGE_NAME }}:${{ env.PREV_IMAGE_TAG }}
         if: ${{ github.event.inputs.is_revert == 'yes' && (github.event.inputs.env_name != 'prod' || github.ref == 'refs/heads/master') }}
         run: |
           docker pull $PREV_IMAGE
@@ -148,13 +153,13 @@ jobs:
 
       - name: Pin last migration images
         env:
-          MIGRATION_TAG: ${{ steps.login-ecr.outputs.registry }}/${{ env.MIGRATION_REPO }}:git-sha-${{ github.sha }}
-          ENV_MIGRATION_TAG: ${{ steps.login-ecr.outputs.registry }}/${{ env.MIGRATION_REPO }}:${{ env.IMAGE_TAG }}
+          MIGRATION_IMAGE: ${{ steps.login-ecr.outputs.registry }}/${{ env.MIGRATION_IMAGE_NAME }}:git-sha-${{ github.sha }}
+          ENV_MIGRATION_IMAGE: ${{ steps.login-ecr.outputs.registry }}/${{ env.MIGRATION_IMAGE_NAME }}:${{ env.IMAGE_TAG }}
         if: ${{ github.event.inputs.env_name != 'prod' || github.ref == 'refs/heads/master' }}
         run: |
-          docker pull $MIGRATION_TAG
-          docker tag $MIGRATION_TAG $ENV_MIGRATION_TAG
-          docker push $ENV_MIGRATION_TAG
+          docker pull $MIGRATION_IMAGE
+          docker tag $MIGRATION_IMAGE $ENV_MIGRATION_IMAGE
+          docker push $ENV_MIGRATION_IMAGE
 
       - name: Configure AWS credentials from TEST
         if: startsWith(github.event.inputs.env_name, 'tz')
@@ -227,8 +232,8 @@ jobs:
     steps:
       - name: Pin old api image as previous
         env:
-          OLD_IMAGE: ${{ steps.login-ecr.outputs.registry }}/${{ env.API_REPO }}:${{ env.PREV_IMAGE_HASH }}
-          PREV_IMAGE: ${{ steps.login-ecr.outputs.registry }}/${{ env.API_REPO }}:${{ env.PREV_IMAGE_TAG }}
+          OLD_IMAGE: ${{ steps.login-ecr.outputs.registry }}/${{ env.IMAGE_NAME }}:${{ env.PREV_IMAGE_HASH }}
+          PREV_IMAGE: ${{ steps.login-ecr.outputs.registry }}/${{ env.IMAGE_NAME }}:${{ env.PREV_IMAGE_TAG }}
         if: ${{ github.event.inputs.is_revert == 'no' && (github.event.inputs.env_name != 'prod' || github.ref == 'refs/heads/master') }}
         run: |
           docker pull $OLD_IMAGE
@@ -242,8 +247,8 @@ jobs:
     steps:
       - name: Pin old api image as latest
         env:
-          LATEST_IMAGE: ${{ steps.login-ecr.outputs.registry }}/${{ env.API_REPO }}:${{ env.IMAGE_TAG }}
-          OLD_IMAGE: ${{ steps.login-ecr.outputs.registry }}/${{ env.API_REPO }}:${{ env.PREV_IMAGE_HASH }}
+          LATEST_IMAGE: ${{ steps.login-ecr.outputs.registry }}/${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }}
+          OLD_IMAGE: ${{ steps.login-ecr.outputs.registry }}/${{ env.IMAGE_NAME }}:${{ env.PREV_IMAGE_HASH }}
         if: ${{ github.event.inputs.env_name != 'prod' || github.ref == 'refs/heads/master' }}
         run: |
           docker pull $OLD_IMAGE
