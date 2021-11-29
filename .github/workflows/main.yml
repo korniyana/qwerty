@@ -250,15 +250,14 @@ jobs:
         env:
           PREV_IMAGE: ${{ steps.login-ecr.outputs.registry }}/${{ env.IMAGE_NAME }}:${{ steps.set_prev_image_tag.outputs.prev_image_tag }}
           IMAGE: ${{ steps.login-ecr.outputs.registry }}/${{ env.IMAGE_NAME }}:latest
-          PREV_IMAGE_HASH:
         run: |
           if docker pull $PREV_IMAGE; then
             PREV_IMAGE_HASH=$(docker image inspect --format='{{.ContainerConfig.Image}}' $PREV_IMAGE)
-            echo "set::output name=prev_image_hash::${{PREV_IMAGE_HASH}}"
+            echo "set::output name=prev_image_hash::$PREV_IMAGE_HASH"
           else
             docker pull $IMAGE
             PREV_IMAGE_HASH=$(docker image inspect --format='{{.ContainerConfig.Image}}
-            echo "set::output name=prev_image_hash::${{PREV_IMAGE_HASH}}"
+            echo "set::output name=prev_image_hash::$PREV_IMAGE_HASH"
           fi
 
       - name: Pin last api images
