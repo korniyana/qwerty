@@ -46,16 +46,16 @@ jobs:
         run: |
           case ${{ github.event.inputs.env_name }} in
           tz2)
-            echo "set::output name=api_service::Api2"
+            echo "::set-output name=api_service::Api2"
             ;;
           tz3)
-            echo "set::output name=api_service::Api3"
+            echo "::set-output name=api_service::Api3"
             ;;
           tz4)
-            echo "set::output name=api_service::Api4"
+            echo "::set-output name=api_service::Api4"
             ;;
           *)
-            echo "set::output name=api_service::Api"
+            echo "::set-output name=api_service::Api"
             ;;
           esac
 
@@ -64,16 +64,16 @@ jobs:
         run: |
           case ${{ github.event.inputs.env_name }} in
           tz2)
-            echo "set::output name=email_masking::EmailMasking2"
+            echo "::set-output name=email_masking::EmailMasking2"
             ;;
           tz3)
-            echo "set::output name=email_masking::EmailMasking3"
+            echo "::set-output name=email_masking::EmailMasking3"
             ;;
           tz4)
-            echo "set::output name=email_masking::EmailMasking4"
+            echo "::set-output name=email_masking::EmailMasking4"
             ;;
           *)
-            echo "set::output name=email_masking::EmailMasking"
+            echo "::set-output name=email_masking::EmailMasking"
             ;;
           esac
 
@@ -82,16 +82,16 @@ jobs:
         run: |
           case ${{ github.event.inputs.env_name }} in
           tz2)
-            echo "set::output name=ns::Notification2"
+            echo "::set-output name=ns::Notification2"
             ;;
           tz3)
-            echo "set::output name=ns::Notification3"
+            echo "::set-output name=ns::Notification3"
             ;;
           tz4)
-            echo "set::output name=ns::Notification4"
+            echo "::set-output name=ns::Notification4"
             ;;
           *)
-            echo "set::output name=ns::Notification"
+            echo "::set-output name=ns::Notification"
             ;;
           esac
 
@@ -100,16 +100,16 @@ jobs:
         run: |
           case ${{ github.event.inputs.env_name }} in
           tz2)
-            echo "set::output name=vault::Vault2"
+            echo "::set-output name=vault::Vault2"
             ;;
           tz3)
-            echo "set::output name=vault::Vault3"
+            echo "::set-output name=vault::Vault3"
             ;;
           tz4)
-            echo "set::output name=vault::Vault4"
+            echo "::set-output name=vault::Vault4"
             ;;
           *)
-            echo "set::output name=vault::Vault"
+            echo "::set-output name=vault::Vault"
             ;;
           esac
 
@@ -118,16 +118,16 @@ jobs:
         run: |
           case ${{ github.event.inputs.env_name }} in
           tz2)
-            echo "set::output name=kv::KVStorage2"
+            echo "::set-output name=kv::KVStorage2"
             ;;
           tz3)
-            echo "set::output name=kv::KVStorage3"
+            echo "::set-output name=kv::KVStorage3"
             ;;
           tz4)
-            echo "set::output name=kv::KVStorage4"
+            echo "::set-output name=kv::KVStorage4"
             ;;
           *)
-            echo "set::output name=kv::KVStorage"
+            echo "::set-output name=kv::KVStorage"
             ;;
           esac
 
@@ -136,16 +136,16 @@ jobs:
         run: |
           case ${{ github.event.inputs.env_name }} in
           tz2)
-            echo "set::output name=migration_task::PrivacyApiMigration2"
+            echo "::set-output name=migration_task::PrivacyApiMigration2"
             ;;
           tz3)
-            echo "set::output name=migration_task::PrivacyApiMigration3"
+            echo "::set-output name=migration_task::PrivacyApiMigration3"
             ;;
           tz4)
-            echo "set::output name=migration_task::PrivacyApiMigration4"
+            echo "::set-output name=migration_task::PrivacyApiMigration4"
             ;;
           *)
-            echo "set::output name=migration_task::PrivacyApiMigration"
+            echo "::set-output name=migration_task::PrivacyApiMigration"
             ;;
           esac
 
@@ -154,16 +154,16 @@ jobs:
         run: |
           case ${{ github.event.inputs.env_name }} in
           prod)
-            echo "set::output name=migrate_sg::sg-01807502c0cab25e6"
+            echo "::set-output name=migrate_sg::sg-01807502c0cab25e6"
             ;;
           sz)
-            echo "set::output name=migrate_sg::sg-0598509f6e73766fe"
+            echo "::set-output name=migrate_sg::sg-0598509f6e73766fe"
             ;;
           tz)
-            echo "set::output name=migrate_sg::sg-084a790985b851efe"
+            echo "::set-output name=migrate_sg::sg-084a790985b851efe"
             ;;
           *)
-            echo "set::output name=migrate_sg::sg-084a790985b851efe"
+            echo "::set-output name=migrate_sg::sg-084a790985b851efe"
             ;;
           esac
 
@@ -172,13 +172,13 @@ jobs:
         run: |
           case ${{ github.event.inputs.env_name }} in
           prod)
-            echo "set::output name=migrate_sn::subnet-00d96e660f3ae20f9,subnet-04192c2d8532f2182"
+            echo "::set-output name=migrate_sn::subnet-00d96e660f3ae20f9,subnet-04192c2d8532f2182"
             ;;
           sz)
-            echo "set::output name=migrate_sn::subnet-0741b5d355e7de1b8,subnet-0e9f1d3c23dbe716f"
+            echo "::set-output name=migrate_sn::subnet-0741b5d355e7de1b8,subnet-0e9f1d3c23dbe716f"
             ;;
           *)
-            echo "set::output name=migrate_sn::subnet-06a9e39fbb766aefe,subnet-0ef7204022307b0d4"
+            echo "::set-output name=migrate_sn::subnet-06a9e39fbb766aefe,subnet-0ef7204022307b0d4"
             ;;
           esac
 
@@ -187,22 +187,22 @@ jobs:
         run: |
           case ${{ github.event.inputs.env_name }} in
           prod)
-            echo "set::output name=image_tag::stable"
+            echo "::set-output name=image_tag::stable"
             ;;
           sz)
-            echo "set::output name=image_tag::latest"
+            echo "::set-output name=image_tag::latest"
             ;;
           tz)
-            echo "set::output name=image_tag::test"
+            echo "::set-output name=image_tag::test"
             ;;
           tz2)
-            echo "set::output name=image_tag::test2"
+            echo "::set-output name=image_tag::test2"
             ;;
           tz3)
-            echo "set::output name=image_tag::test3"
+            echo "::set-output name=image_tag::test3"
             ;;
           tz4)
-            echo "set::output name=image_tag::test4"
+            echo "::set-output name=image_tag::test4"
             ;;
           esac
 
@@ -211,28 +211,27 @@ jobs:
         run: |
           case ${{ github.event.inputs.env_name }} in
           prod)
-            echo "set::output name=prev_image_tag::prev-stable"
+            echo "::set-output name=prev_image_tag::prev-stable"
             ;;
           sz)
-            echo "set::output name=prev_image_tag::prev-latest"
+            echo "::set-output name=prev_image_tag::prev-latest"
             ;;
           tz)
-            echo "set::output name=prev_image_tag::prev-test"
+            echo "::set-output name=prev_image_tag::prev-test"
             ;;
           tz2)
-            echo "set::output name=prev_image_tag::prev-test2"
+            echo "::set-output name=prev_image_tag::prev-test2"
             ;;
           tz3)
-            echo "set::output name=prev_image_tag::prev-test3"
+            echo "::set-output name=prev_image_tag::prev-test3"
             ;;
           tz4)
-            echo "set::output name=prev_image_tag::prev-test4"
+            echo "::set-output name=prev_image_tag::prev-test4"
             ;;
           esac
-          echo "${{steps.set_image_tag.outputs.image_tag}}"
 
       - name: Check the environment correctness input for ${{github.event.inputs.env_name}}
-        if: ${{ steps.set_image_tag.outputs.image_tag == '' }}
+        if: ${{ !steps.set_image_tag.outputs.image_tag }}
         run: exit 1
 
       - name: Configure AWS credentials from ECR
@@ -254,11 +253,11 @@ jobs:
         run: |
           if docker pull $PREV_IMAGE; then
             PREV_IMAGE_HASH=$(docker image inspect --format='{{.ContainerConfig.Image}}' $PREV_IMAGE)
-            echo "set::output name=prev_image_hash::$PREV_IMAGE_HASH"
+            echo "::set-output name=prev_image_hash::$PREV_IMAGE_HASH"
           else
             docker pull $IMAGE
             PREV_IMAGE_HASH=$(docker image inspect --format='{{.ContainerConfig.Image}}
-            echo "set::output name=prev_image_hash::$PREV_IMAGE_HASH"
+            echo "::set-output name=prev_image_hash::$PREV_IMAGE_HASH"
           fi
 
       - name: Pin last api images
