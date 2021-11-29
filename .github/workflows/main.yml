@@ -283,7 +283,7 @@ jobs:
       - name: Pin last migration images
         env:
           MIGRATION_IMAGE: ${{ steps.login-ecr.outputs.registry }}/${{ env.MIGRATION_IMAGE_NAME }}:git-sha-${{ github.sha }}
-          ENV_MIGRATION_IMAGE: ${{ steps.login-ecr.outputs.registry }}/${{ env.MIGRATION_IMAGE_NAME }}:${{ outputs.image_tag }}
+          ENV_MIGRATION_IMAGE: ${{ steps.login-ecr.outputs.registry }}/${{ env.MIGRATION_IMAGE_NAME }}:${{ steps.set_image_tag.outputs.image_tag }}
         if: ${{ github.event.inputs.env_name != 'prod' || github.ref == 'refs/heads/master' }}
         run: |
           docker pull $MIGRATION_IMAGE
@@ -342,17 +342,17 @@ jobs:
       - name: Deploy kv service to ${{github.event.inputs.env_name}}
         if: ${{ github.event.inputs.skip_deploy != 'yes' }}
         run: |
-          aws ecs update-service --cluster PrivacyApp --service ${{ outputs.kv_service }} --force-new-deployment
+          aws ecs update-service --cluster PrivacyApp --service ${{ steps.set_kv_service.outputs.kv_service }} --force-new-deployment
 
       - name: Deploy notification service to ${{github.event.inputs.env_name}}
         if: ${{ github.event.inputs.skip_deploy != 'yes' }}
         run: |
-          aws ecs update-service --cluster PrivacyApp --service ${{ outputs.ns_service }} --force-new-deployment
+          aws ecs update-service --cluster PrivacyApp --service ${{ steps.set_ns_service.outputs.ns_service }} --force-new-deployment
 
       - name: Wait until services will stable on ${{github.event.inputs.env_name}}
         if: ${{ github.event.inputs.skip_deploy != 'yes' }}
         run: |
-          aws ecs wait services-stable --cluster PrivacyApp --services "${{ outputs.api_service }}" "${{ outputs.email_masking_service }}" "$${{ outputs.vault_service }}" "$${{ outputs.ns_service }}" "$${{ outputs.vault_service }}"
+          aws ecs wait services-stable --cluster PrivacyApp --services "${{ steps.set_api_service.outputs.api_service }}" "${{ steps.set_email_masking_service.outputs.email_masking_service }}" "${{ steps.set_vault_service.outputs.vault_service }}" "${{ steps.set_ns_service.outputs.ns_service }}" "${{ step.sset_kv-service.outputs.kv_service }}"
 
   pin_image:
     needs: deploy
@@ -412,4 +412,4 @@ jobs:
       - name: Wait until services will stable on ${{github.event.inputs.env_name}}
         if: ${{ github.event.inputs.skip_deploy != 'yes' }}
         run: |
-          aws ecs wait services-stable --cluster PrivacyApp --services "${{ outputs.api_service }}" "${{ outputs.email_masking_service }}" "$${{ outputs.vault_service }}" "$${{ outputs.ns_service }}" "$${{ outputs.vault_service }}"
+          aws ecs wait services-stable --cluster PrivacyApp --services "${{ needs.deploy.outputs.api_service }}" "${{ needs.deploy.outputs.email_masking_service }}" "${{ needs.deploy.outputs.vault_service }}" "${{ needs.deploy.outputs.ns_service }}" "${{ needs.deploy.outputs.kv_service }}"
