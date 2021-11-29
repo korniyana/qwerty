@@ -209,7 +209,7 @@ jobs:
       - name: Set prev_image_tag variable
         id: set_prev_image_tag
         run: |
-          case ${{ github.event.inputs.prev_env_name }} in
+          case ${{ github.event.inputs.env_name }} in
           prod)
             echo "set::output name=prev_image_tag::prev-stable"
             ;;
