@@ -352,7 +352,7 @@ jobs:
       - name: Wait until services will stable on ${{github.event.inputs.env_name}}
         if: ${{ github.event.inputs.skip_deploy != 'yes' }}
         run: |
-          aws ecs wait services-stable --cluster PrivacyApp --services "${{ steps.set_api_service.outputs.api_service }}" "${{ steps.set_email_masking_service.outputs.email_masking_service }}" "${{ steps.set_vault_service.outputs.vault_service }}" "${{ steps.set_ns_service.outputs.ns_service }}" "${{ step.sset_kv-service.outputs.kv_service }}"
+          aws ecs wait services-stable --cluster PrivacyApp --services "${{ steps.set_api_service.outputs.api_service }}" "${{ steps.set_email_masking_service.outputs.email_masking_service }}" "${{ steps.set_vault_service.outputs.vault_service }}" "${{ steps.set_ns_service.outputs.ns_service }}" "${{ steps.set_kv-service.outputs.kv_service }}"
 
   pin_image:
     needs: deploy
