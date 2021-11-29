@@ -23,90 +23,215 @@ on:
 env:
   IMAGE_NAME: figleaf-api
   MIGRATION_IMAGE_NAME: figleaf-api-migrate
-  API_SERVICE: Api
-  EM_SERVICE: EmailMasking
-  NS_SERVICE: Notification
-  VAULT_SERVICE: Vault
-  KV_SERVICE: KVStorage
-  MIGRATION_TASK: PrivacyApiMigration
-  IMAGE_TAG:
-  PREV_IMAGE_TAG:
-  PREV_IMAGE_HASH:
-  MIGRATE_SG:
-  MIGRATE_SN:
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    outputs:
+      migrate_sg: ${{ steps.set_migrate_sg.outputs.migrate_sg }}
+      migrate_sn: ${{ steps.set_migrate_sn.outputs.migrate_sn }}
+      image_tag: ${{ steps.set_image_tag.outputs.image_tag }}
+      prev_image_tag: ${{ steps.set_prev_image_tag.outputs.prev_image_tag }}
+      api_service: ${{ steps.set_api_service.outputs.api_service }}
+      email_masking_service: ${{ steps.set_email_masking_service.outputs.email_masking }}
+      ns_service: ${{ steps.set_ns_service.outputs.ns }}
+      vault_service: ${{ steps.set_vault_service.outputs.vault }}
+      kv_service: ${{ steps.set_kv_service.outputs.kv }}
+      migration_task: ${{ steps.set_migration_task.outputs.migration_task }}
+      prev_image_hash: ${{ steps.save_previous_image_hash.outputs.prev_image_hash }}
+
     steps:
-      - name: Set environment variables for prod
-        if: ${{ github.event.inputs.env_name == 'prod' }}
+      - name: Set api_service variable
+        id: set_api_service
         run: |
-          echo "MIGRATE_SG=sg-01807502c0cab25e6" >> "$GITHUB_ENV"
-          echo "MIGRATE_SN=subnet-00d96e660f3ae20f9,subnet-04192c2d8532f2182" >> "$GITHUB_ENV"
-          echo "IMAGE_TAG=stable" >> "$GITHUB_ENV"
-          echo "PREV_IMAGE_TAG=prev-stable" >> "$GITHUB_ENV"
+          case ${{ github.event.inputs.env_name }} in
+          tz2)
+            echo "set::output name=api_service::Api2"
+            ;;
+          tz3)
+            echo "set::output name=api_service::Api3"
+            ;;
+          tz4)
+            echo "set::output name=api_service::Api4"
+            ;;
+          *)
+            echo "set::output name=api_service::Api"
+            ;;
+          esac
 
-      - name: Set environment variables for stage
-        if: ${{ github.event.inputs.env_name == 'sz' }}
+      - name: Set email_masking variable
+        id: set_email_masking_service
         run: |
-          echo "MIGRATE_SG=sg-0598509f6e73766fe" >> "$GITHUB_ENV"
-          echo "MIGRATE_SN=subnet-0741b5d355e7de1b8,subnet-0e9f1d3c23dbe716f" >> "$GITHUB_ENV"
-          echo "IMAGE_TAG=latest" >> "$GITHUB_ENV"
-          echo "PREV_IMAGE_TAG=prev-latest" >> "$GITHUB_ENV"
+          case ${{ github.event.inputs.env_name }} in
+          tz2)
+            echo "set::output name=email_masking::EmailMasking2"
+            ;;
+          tz3)
+            echo "set::output name=email_masking::EmailMasking3"
+            ;;
+          tz4)
+            echo "set::output name=email_masking::EmailMasking4"
+            ;;
+          *)
+            echo "set::output name=email_masking::EmailMasking"
+            ;;
+          esac
 
-      - name: Set environment variables for test
-        if: ${{ github.event.inputs.env_name == 'tz' }}
+      - name: Set notification service name variable
+        id: set_ns_service
         run: |
-          echo "MIGRATE_SG=sg-084a790985b851efe" >> "$GITHUB_ENV"
-          echo "MIGRATE_SN=subnet-06a9e39fbb766aefe,subnet-0ef7204022307b0d4" >> "$GITHUB_ENV"
-          echo "IMAGE_TAG=test" >> "$GITHUB_ENV"
-          echo "PREV_IMAGE_TAG=prev-test" >> "$GITHUB_ENV"
+          case ${{ github.event.inputs.env_name }} in
+          tz2)
+            echo "set::output name=ns::Notification2"
+            ;;
+          tz3)
+            echo "set::output name=ns::Notification3"
+            ;;
+          tz4)
+            echo "set::output name=ns::Notification4"
+            ;;
+          *)
+            echo "set::output name=ns::Notification"
+            ;;
+          esac
 
-      - name: Set environment variables for test2
-        if: ${{ github.event.inputs.env_name == 'tz2' }}
+      - name: Set vault service name variable
+        id: set_vault_service
         run: |
-          echo "MIGRATE_SG=sg-084a790985b851efe" >> "$GITHUB_ENV"
-          echo "MIGRATE_SN=subnet-06a9e39fbb766aefe,subnet-0ef7204022307b0d4" >> "$GITHUB_ENV"
-          echo "IMAGE_TAG=test2" >> "$GITHUB_ENV"
-          echo "PREV_IMAGE_TAG=prev-test2" >> "$GITHUB_ENV"
-          echo "API_SERVICE=Api2" >> "$GITHUB_ENV"
-          echo "EM_SERVICE=EmailMasking2" >> "$GITHUB_ENV"
-          echo "NS_SERVICE=Notification2" >> "$GITHUB_ENV"
-          echo "VAULT_SERVICE=Vault2" >> "$GITHUB_ENV"
-          echo "KV_SERVICE=KVStorage2" >> "$GITHUB_ENV"
-          echo "MIGRATION_TASK=PrivacyApiMigration2" >> "$GITHUB_ENV"
+          case ${{ github.event.inputs.env_name }} in
+          tz2)
+            echo "set::output name=vault::Vault2"
+            ;;
+          tz3)
+            echo "set::output name=vault::Vault3"
+            ;;
+          tz4)
+            echo "set::output name=vault::Vault4"
+            ;;
+          *)
+            echo "set::output name=vault::Vault"
+            ;;
+          esac
 
-      - name: Set environment variables for test3
-        if: ${{ github.event.inputs.env_name == 'tz3' }}
+      - name: Set kv service name variable
+        id: set_kv_service
         run: |
-          echo "MIGRATE_SG=sg-084a790985b851efe" >> "$GITHUB_ENV"
-          echo "MIGRATE_SN=subnet-06a9e39fbb766aefe,subnet-0ef7204022307b0d4" >> "$GITHUB_ENV"
-          echo "IMAGE_TAG=test3" >> "$GITHUB_ENV"
-          echo "PREV_IMAGE_TAG=prev-test3" >> "$GITHUB_ENV"
-          echo "API_SERVICE=Api3" >> "$GITHUB_ENV"
-          echo "EM_SERVICE=EmailMasking3" >> "$GITHUB_ENV"
-          echo "NS_SERVICE=Notification3" >> "$GITHUB_ENV"
-          echo "VAULT_SERVICE=Vault3" >> "$GITHUB_ENV"
-          echo "KV_SERVICE=KVStorage3" >> "$GITHUB_ENV"
-          echo "MIGRATION_TASK=PrivacyApiMigration3" >> "$GITHUB_ENV"
+          case ${{ github.event.inputs.env_name }} in
+          tz2)
+            echo "set::output name=kv::KVStorage2"
+            ;;
+          tz3)
+            echo "set::output name=kv::KVStorage3"
+            ;;
+          tz4)
+            echo "set::output name=kv::KVStorage4"
+            ;;
+          *)
+            echo "set::output name=kv::KVStorage"
+            ;;
+          esac
 
-      - name: Set environment variables for test4
-        if: ${{ github.event.inputs.env_name == 'tz4' }}
+      - name: Set migration task name variable
+        id: set_migration_task
         run: |
-          echo "MIGRATE_SG=sg-084a790985b851efe" >> "$GITHUB_ENV"
-          echo "MIGRATE_SN=subnet-06a9e39fbb766aefe,subnet-0ef7204022307b0d4" >> "$GITHUB_ENV"
-          echo "IMAGE_TAG=test4" >> "$GITHUB_ENV"
-          echo "PREV_IMAGE_TAG=prev-test4" >> "$GITHUB_ENV"
-          echo "API_SERVICE=Api4" >> "$GITHUB_ENV"
-          echo "EM_SERVICE=EmailMasking4" >> "$GITHUB_ENV"
-          echo "NS_SERVICE=Notification4" >> "$GITHUB_ENV"
-          echo "VAULT_SERVICE=Vault4" >> "$GITHUB_ENV"
-          echo "KV_SERVICE=KVStorage4" >> "$GITHUB_ENV"
-          echo "MIGRATION_TASK=PrivacyApiMigration4" >> "$GITHUB_ENV"
+          case ${{ github.event.inputs.env_name }} in
+          tz2)
+            echo "set::output name=migration_task::PrivacyApiMigration2"
+            ;;
+          tz3)
+            echo "set::output name=migration_task::PrivacyApiMigration3"
+            ;;
+          tz4)
+            echo "set::output name=migration_task::PrivacyApiMigration4"
+            ;;
+          *)
+            echo "set::output name=migration_task::PrivacyApiMigration"
+            ;;
+          esac
+
+      - name: Set migrate_sg variable
+        id: set_migrate_sg
+        run: |
+          case ${{ github.event.inputs.env_name }} in
+          prod)
+            echo "set::output name=migrate_sg::sg-01807502c0cab25e6"
+            ;;
+          sz)
+            echo "set::output name=migrate_sg::sg-0598509f6e73766fe"
+            ;;
+          tz)
+            echo "set::output name=migrate_sg::sg-084a790985b851efe"
+            ;;
+          *)
+            echo "set::output name=migrate_sg::sg-084a790985b851efe"
+            ;;
+          esac
+
+      - name: Set migrate_sn variable
+        id: set_migrate_sn
+        run: |
+          case ${{ github.event.inputs.env_name }} in
+          prod)
+            echo "set::output name=migrate_sn::subnet-00d96e660f3ae20f9,subnet-04192c2d8532f2182"
+            ;;
+          sz)
+            echo "set::output name=migrate_sn::subnet-0741b5d355e7de1b8,subnet-0e9f1d3c23dbe716f"
+            ;;
+          *)
+            echo "set::output name=migrate_sn::subnet-06a9e39fbb766aefe,subnet-0ef7204022307b0d4"
+            ;;
+          esac
+
+      - name: Set image_tag variable
+        id: set_image_tag
+        run: |
+          case ${{ github.event.inputs.env_name }} in
+          prod)
+            echo "set::output name=image_tag::stable"
+            ;;
+          sz)
+            echo "set::output name=image_tag::latest"
+            ;;
+          tz)
+            echo "set::output name=image_tag::test"
+            ;;
+          tz2)
+            echo "set::output name=image_tag::test2"
+            ;;
+          tz3)
+            echo "set::output name=image_tag::test3"
+            ;;
+          tz4)
+            echo "set::output name=image_tag::test4"
+            ;;
+          esac
+
+      - name: Set prev_image_tag variable
+        id: set_prev_image_tag
+        run: |
+          case ${{ github.event.inputs.prev_env_name }} in
+          prod)
+            echo "set::output name=prev_image_tag::prev-stable"
+            ;;
+          sz)
+            echo "set::output name=prev_image_tag::prev-latest"
+            ;;
+          tz)
+            echo "set::output name=prev_image_tag::prev-test"
+            ;;
+          tz2)
+            echo "set::output name=prev_image_tag::prev-test2"
+            ;;
+          tz3)
+            echo "set::output name=prev_image_tag::prev-test3"
+            ;;
+          tz4)
+            echo "set::output name=prev_image_tag::prev-test4"
+            ;;
+          esac
 
       - name: Check the environment correctness input for ${{github.event.inputs.env_name}}
-        if: ${{ !env.IMAGE_TAG }}
+        if: ${{ !outputs.image_tag }}
         run: exit 1
 
       - name: Configure AWS credentials from ECR
@@ -121,20 +246,24 @@ jobs:
         uses: aws-actions/amazon-ecr-login@v1
 
       - name: Save previous image
+        id: save_previous_image_hash
         env:
-          PREV_IMAGE: ${{ steps.login-ecr.outputs.registry }}/${{ env.IMAGE_NAME }}:${{ env.PREV_IMAGE_TAG }}
-          IMAGE: ${{ steps.login-ecr.outputs.registry }}/${{ env.IMAGE_NAME }}
+          PREV_IMAGE: ${{ steps.login-ecr.outputs.registry }}/${{ env.IMAGE_NAME }}:${{ outputs.prev_image_tag }}
+          IMAGE: ${{ steps.login-ecr.outputs.registry }}/${{ env.IMAGE_NAME }}:latest
         run: |
-          if docker pull PREV_IMAGE; then
-            echo "PREV_IMAGE_HASH=$(docker image inspect --format='{{.ContainerConfig.Image}}' $PREV_IMAGE)" >> "$GITHUB_ENV"
+          if docker pull $PREV_IMAGE; then
+            PREV_IMAGE_HASH=$(docker image inspect --format='{{.ContainerConfig.Image}}' $PREV_IMAGE)
+            echo "set::output name=prev_image_hash::${{PREV_IMAGE_HASH]}"
           else
-            echo "PREV_IMAGE_HASH=$(docker image inspect --format='{{.ContainerConfig.Image}}' $IMAGE)" >> "$GITHUB_ENV"
+            docker pull $IMAGE
+            PREV_IMAGE_HASH=$(docker image inspect --format='{{.ContainerConfig.Image}}
+            echo "set::output name=prev_image_hash::${{PREV_IMAGE_HASH]}"
           fi
 
       - name: Pin last api images
         env:
           API_IMAGE: ${{ steps.login-ecr.outputs.registry }}/${{ env.IMAGE_NAME }}:git-sha-${{ github.sha }}
-          ENV_API_IMAGE: ${{ steps.login-ecr.outputs.registry }}/${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }}
+          ENV_API_IMAGE: ${{ steps.login-ecr.outputs.registry }}/${{ env.IMAGE_NAME }}:${{ outputs.image_tag }}
         if: ${{ github.event.inputs.is_revert == 'no' && (github.event.inputs.env_name != 'prod' || github.ref == 'refs/heads/master') }}
         run: |
           docker pull $API_IMAGE
@@ -143,8 +272,8 @@ jobs:
 
       - name: Pin previous api images as latest
         env:
-          LATEST_IMAGE: ${{ steps.login-ecr.outputs.registry }}/${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }}
-          PREV_IMAGE: ${{ steps.login-ecr.outputs.registry }}/${{ env.IMAGE_NAME }}:${{ env.PREV_IMAGE_TAG }}
+          LATEST_IMAGE: ${{ steps.login-ecr.outputs.registry }}/${{ env.IMAGE_NAME }}:${{ outputs.image_tag }}
+          PREV_IMAGE: ${{ steps.login-ecr.outputs.registry }}/${{ env.IMAGE_NAME }}:${{ outputs.prev_image_tag }}
         if: ${{ github.event.inputs.is_revert == 'yes' && (github.event.inputs.env_name != 'prod' || github.ref == 'refs/heads/master') }}
         run: |
           docker pull $PREV_IMAGE
@@ -154,7 +283,7 @@ jobs:
       - name: Pin last migration images
         env:
           MIGRATION_IMAGE: ${{ steps.login-ecr.outputs.registry }}/${{ env.MIGRATION_IMAGE_NAME }}:git-sha-${{ github.sha }}
-          ENV_MIGRATION_IMAGE: ${{ steps.login-ecr.outputs.registry }}/${{ env.MIGRATION_IMAGE_NAME }}:${{ env.IMAGE_TAG }}
+          ENV_MIGRATION_IMAGE: ${{ steps.login-ecr.outputs.registry }}/${{ env.MIGRATION_IMAGE_NAME }}:${{ outputs.image_tag }}
         if: ${{ github.event.inputs.env_name != 'prod' || github.ref == 'refs/heads/master' }}
         run: |
           docker pull $MIGRATION_IMAGE
@@ -198,32 +327,32 @@ jobs:
       - name: Deploy api service to ${{github.event.inputs.env_name}}
         if: ${{ github.event.inputs.skip_deploy != 'yes' }}
         run: |
-          aws ecs update-service --cluster PrivacyApp --service $API_SERVICE --force-new-deployment
+          aws ecs update-service --cluster PrivacyApp --service ${{ outputs.api_service }} --force-new-deployment
 
       - name: Deploy emailmasking service ${{github.event.inputs.env_name}}
         if: ${{ github.event.inputs.skip_deploy != 'yes' }}
         run: |
-          aws ecs update-service --cluster PrivacyApp --service $EM_SERVICE --force-new-deployment
+          aws ecs update-service --cluster PrivacyApp --service ${{ outputs.email_masking_service }} --force-new-deployment
 
       - name: Deploy vault service to ${{github.event.inputs.env_name}}
         if: ${{ github.event.inputs.skip_deploy != 'yes' }}
         run: |
-          aws ecs update-service --cluster PrivacyApp --service $VAULT_SERVICE --force-new-deployment
+          aws ecs update-service --cluster PrivacyApp --service ${{ outputs.vault_service }} --force-new-deployment
 
       - name: Deploy kv service to ${{github.event.inputs.env_name}}
         if: ${{ github.event.inputs.skip_deploy != 'yes' }}
         run: |
-          aws ecs update-service --cluster PrivacyApp --service $KV_SERVICE --force-new-deployment
+          aws ecs update-service --cluster PrivacyApp --service ${{ outputs.kv_service }} --force-new-deployment
 
       - name: Deploy notification service to ${{github.event.inputs.env_name}}
         if: ${{ github.event.inputs.skip_deploy != 'yes' }}
         run: |
-          aws ecs update-service --cluster PrivacyApp --service $NS_SERVICE --force-new-deployment
+          aws ecs update-service --cluster PrivacyApp --service ${{ outputs.ns_service }} --force-new-deployment
 
       - name: Wait until services will stable on ${{github.event.inputs.env_name}}
         if: ${{ github.event.inputs.skip_deploy != 'yes' }}
         run: |
-          aws ecs wait services-stable --cluster PrivacyApp --services "$API_SERVICE" "$EM_SERVICE" "$VAULT_SERVICE" "$NS_SERVICE" "$KV_SERVICE"
+          aws ecs wait services-stable --cluster PrivacyApp --services "${{ outputs.api_service }}" "${{ outputs.email_masking_service }}" "$${{ outputs.vault_service }}" "$${{ outputs.ns_service }}" "$${{ outputs.vault_service }}"
 
   pin_image:
     needs: deploy
@@ -232,8 +361,8 @@ jobs:
     steps:
       - name: Pin old api image as previous
         env:
-          OLD_IMAGE: ${{ steps.login-ecr.outputs.registry }}/${{ env.IMAGE_NAME }}:${{ env.PREV_IMAGE_HASH }}
-          PREV_IMAGE: ${{ steps.login-ecr.outputs.registry }}/${{ env.IMAGE_NAME }}:${{ env.PREV_IMAGE_TAG }}
+          OLD_IMAGE: ${{ needs.deploy.steps.login-ecr.outputs.registry }}/${{ env.IMAGE_NAME }}:${{ needs.deploy.outputs.prev_image_hash }}
+          PREV_IMAGE: ${{ needs.deploy.steps.login-ecr.outputs.registry }}/${{ env.IMAGE_NAME }}:${{ needs.deploy.outputs.prev_image_tag }}
         if: ${{ github.event.inputs.is_revert == 'no' && (github.event.inputs.env_name != 'prod' || github.ref == 'refs/heads/master') }}
         run: |
           docker pull $OLD_IMAGE
@@ -247,8 +376,8 @@ jobs:
     steps:
       - name: Pin old api image as latest
         env:
-          LATEST_IMAGE: ${{ steps.login-ecr.outputs.registry }}/${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }}
-          OLD_IMAGE: ${{ steps.login-ecr.outputs.registry }}/${{ env.IMAGE_NAME }}:${{ env.PREV_IMAGE_HASH }}
+          LATEST_IMAGE: ${{ needs.deploy.steps.login-ecr.outputs.registry }}/${{ env.IMAGE_NAME }}:${{ needs.deploy.outputs.image_tag }}
+          OLD_IMAGE: ${{ needs.deploy.steps.login-ecr.outputs.registry }}/${{ env.IMAGE_NAME }}:${{ needs.deploy.outputs.prev_image_hash }}
         if: ${{ github.event.inputs.env_name != 'prod' || github.ref == 'refs/heads/master' }}
         run: |
           docker pull $OLD_IMAGE
@@ -258,29 +387,29 @@ jobs:
       - name: Deploy api service to ${{github.event.inputs.env_name}}
         if: ${{ github.event.inputs.skip_deploy != 'yes' }}
         run: |
-          aws ecs update-service --cluster PrivacyApp --service $API_SERVICE --force-new-deployment
+          aws ecs update-service --cluster PrivacyApp --service ${{ needs.deploy.outputs.api_service }} --force-new-deployment
 
       - name: Deploy emailmasking service ${{github.event.inputs.env_name}}
         if: ${{ github.event.inputs.skip_deploy != 'yes' }}
         run: |
-          aws ecs update-service --cluster PrivacyApp --service $EM_SERVICE --force-new-deployment
+          aws ecs update-service --cluster PrivacyApp --service ${{ needs.deploy.outputs.email_masking_service }} --force-new-deployment
 
       - name: Deploy vault service to ${{github.event.inputs.env_name}}
         if: ${{ github.event.inputs.skip_deploy != 'yes' }}
         run: |
-          aws ecs update-service --cluster PrivacyApp --service $VAULT_SERVICE --force-new-deployment
+          aws ecs update-service --cluster PrivacyApp --service ${{ needs.deploy.outputs.vault_service }} --force-new-deployment
 
       - name: Deploy kv service to ${{github.event.inputs.env_name}}
         if: ${{ github.event.inputs.skip_deploy != 'yes' }}
         run: |
-          aws ecs update-service --cluster PrivacyApp --service $KV_SERVICE --force-new-deployment
+          aws ecs update-service --cluster PrivacyApp --service ${{ needs.deploy.outputs.kv_service }} --force-new-deployment
 
       - name: Deploy notification service to ${{github.event.inputs.env_name}}
         if: ${{ github.event.inputs.skip_deploy != 'yes' }}
         run: |
-          aws ecs update-service --cluster PrivacyApp --service $NS_SERVICE --force-new-deployment
+          aws ecs update-service --cluster PrivacyApp --service ${{ needs.deploy.outputs.ns_service }} --force-new-deployment
 
       - name: Wait until services will stable on ${{github.event.inputs.env_name}}
         if: ${{ github.event.inputs.skip_deploy != 'yes' }}
         run: |
-          aws ecs wait services-stable --cluster PrivacyApp --services "$API_SERVICE" "$EM_SERVICE" "$VAULT_SERVICE" "$NS_SERVICE" "$KV_SERVICE"
+          aws ecs wait services-stable --cluster PrivacyApp --services "${{ outputs.api_service }}" "${{ outputs.email_masking_service }}" "$${{ outputs.vault_service }}" "$${{ outputs.ns_service }}" "$${{ outputs.vault_service }}"
