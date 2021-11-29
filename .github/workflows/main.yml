@@ -184,8 +184,6 @@ jobs:
 
       - name: Set image_tag variable
         id: set_image_tag
-        outputs:
-          image_tag: ${{ steps.set_image_tag.outputs.image_tag }}
         run: |
           case ${{ github.event.inputs.env_name }} in
           prod)
@@ -231,6 +229,7 @@ jobs:
             echo "set::output name=prev_image_tag::prev-test4"
             ;;
           esac
+          echo "${{steps.set_image_tag.outputs.image_tag}}"
 
       - name: Check the environment correctness input for ${{github.event.inputs.env_name}}
         if: ${{ !steps.set_image_tag.outputs.image_tag }}
