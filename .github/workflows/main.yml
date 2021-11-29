@@ -229,7 +229,7 @@ jobs:
             echo "set::output name=prev_image_tag::prev-test4"
             ;;
           esac
-          echo "${{steps.set_image_tag.outputs.image_tag}}"
+          echo "${{jobs.deploy.outputs.image_tag}}"
 
       - name: Check the environment correctness input for ${{github.event.inputs.env_name}}
         if: ${{ steps.set_image_tag.outputs.image_tag == '' }}
