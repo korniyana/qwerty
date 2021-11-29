@@ -231,7 +231,7 @@ jobs:
           esac
 
       - name: Check the environment correctness input for ${{github.event.inputs.env_name}}
-        if: ${{ !outputs.image_tag }}
+        if: ${{ !steps.set_image_tag.outputs.image_tag }}
         run: exit 1
 
       - name: Configure AWS credentials from ECR
@@ -248,7 +248,7 @@ jobs:
       - name: Save previous image
         id: save_previous_image_hash
         env:
-          PREV_IMAGE: ${{ steps.login-ecr.outputs.registry }}/${{ env.IMAGE_NAME }}:${{ outputs.prev_image_tag }}
+          PREV_IMAGE: ${{ steps.login-ecr.outputs.registry }}/${{ env.IMAGE_NAME }}:${{ steps.set_prev_image_tag.outputs.prev_image_tag }}
           IMAGE: ${{ steps.login-ecr.outputs.registry }}/${{ env.IMAGE_NAME }}:latest
         run: |
           if docker pull $PREV_IMAGE; then
@@ -263,7 +263,7 @@ jobs:
       - name: Pin last api images
         env:
           API_IMAGE: ${{ steps.login-ecr.outputs.registry }}/${{ env.IMAGE_NAME }}:git-sha-${{ github.sha }}
-          ENV_API_IMAGE: ${{ steps.login-ecr.outputs.registry }}/${{ env.IMAGE_NAME }}:${{ outputs.image_tag }}
+          ENV_API_IMAGE: ${{ steps.login-ecr.outputs.registry }}/${{ env.IMAGE_NAME }}:${{ steps.set_image_tag.outputs.image_tag }}
         if: ${{ github.event.inputs.is_revert == 'no' && (github.event.inputs.env_name != 'prod' || github.ref == 'refs/heads/master') }}
         run: |
           docker pull $API_IMAGE
@@ -272,8 +272,8 @@ jobs:
 
       - name: Pin previous api images as latest
         env:
-          LATEST_IMAGE: ${{ steps.login-ecr.outputs.registry }}/${{ env.IMAGE_NAME }}:${{ outputs.image_tag }}
-          PREV_IMAGE: ${{ steps.login-ecr.outputs.registry }}/${{ env.IMAGE_NAME }}:${{ outputs.prev_image_tag }}
+          LATEST_IMAGE: ${{ steps.login-ecr.outputs.registry }}/${{ env.IMAGE_NAME }}:${{ steps.set_image_tag.outputs.image_tag }}
+          PREV_IMAGE: ${{ steps.login-ecr.outputs.registry }}/${{ env.IMAGE_NAME }}:${{ steps.set_prev_image_tag.outputs.prev_image_tag }}
         if: ${{ github.event.inputs.is_revert == 'yes' && (github.event.inputs.env_name != 'prod' || github.ref == 'refs/heads/master') }}
         run: |
           docker pull $PREV_IMAGE
@@ -327,17 +327,17 @@ jobs:
       - name: Deploy api service to ${{github.event.inputs.env_name}}
         if: ${{ github.event.inputs.skip_deploy != 'yes' }}
         run: |
-          aws ecs update-service --cluster PrivacyApp --service ${{ outputs.api_service }} --force-new-deployment
+          aws ecs update-service --cluster PrivacyApp --service ${{ steps.set_api_service.outputs.api_service }} --force-new-deployment
 
       - name: Deploy emailmasking service ${{github.event.inputs.env_name}}
         if: ${{ github.event.inputs.skip_deploy != 'yes' }}
         run: |
-          aws ecs update-service --cluster PrivacyApp --service ${{ outputs.email_masking_service }} --force-new-deployment
+          aws ecs update-service --cluster PrivacyApp --service ${{ steps.set_email_masking_service.outputs.email_masking_service }} --force-new-deployment
 
       - name: Deploy vault service to ${{github.event.inputs.env_name}}
         if: ${{ github.event.inputs.skip_deploy != 'yes' }}
         run: |
-          aws ecs update-service --cluster PrivacyApp --service ${{ outputs.vault_service }} --force-new-deployment
+          aws ecs update-service --cluster PrivacyApp --service ${{ steps.set_vault_service.outputs.vault_service }} --force-new-deployment
 
       - name: Deploy kv service to ${{github.event.inputs.env_name}}
         if: ${{ github.event.inputs.skip_deploy != 'yes' }}
