@@ -232,7 +232,7 @@ jobs:
           echo "${{steps.set_image_tag.outputs.image_tag}}"
 
       - name: Check the environment correctness input for ${{github.event.inputs.env_name}}
-        if: ${{ !steps.set_image_tag.outputs.image_tag }}
+        if: ${{ steps.set_image_tag.outputs.image_tag == "" }}
         run: exit 1
 
       - name: Configure AWS credentials from ECR
