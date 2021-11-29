@@ -184,6 +184,8 @@ jobs:
 
       - name: Set image_tag variable
         id: set_image_tag
+        outputs:
+          image_tag: ${{ steps.set_image_tag.outputs.image_tag }}
         run: |
           case ${{ github.event.inputs.env_name }} in
           prod)
